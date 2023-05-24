@@ -5,9 +5,10 @@ services:
     image: node:lts
     working_dir: /var/www/html/app/
     entrypoint: /bin/bash
+    user: "node"
     ports:
       - 3000:3000
     volumes:
       - ./:/var/www/html/app
     tty: true
-    command: -c "yarn && yarn dev"
+    command: yarn && yarn dev
