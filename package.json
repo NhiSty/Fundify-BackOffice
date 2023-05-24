@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "jest",
     "lint": "eslint --ext .js,.vue src",
-    "prepare": "husky install"
+    "prepare": "husky install && yarn set version stable && yarn"
   },
   "dependencies": {
     "vue": "^3.2.47"
