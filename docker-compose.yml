@@ -1,0 +1,13 @@
+version: "3.4"
+services:
+  my_frontend:
+    container_name: my_frontend
+    image: node:lts
+    working_dir: /var/www/html/app/
+    entrypoint: /bin/bash
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/var/www/html/app
+    tty: true
+    command: -c "yarn && yarn dev"
