@@ -4,13 +4,13 @@
     <form name="login-form" class="max-w-sm mx-auto">
       <h2 class="my-2 text-2xl">Connexion</h2>
       <div class="mb-4">
-        <label for="username" class="block text-sm font-medium text-gray-700"
-          >Username:</label
+        <label for="email" class="block text-sm font-medium text-gray-700"
+          >Email:</label
         >
         <input
-          type="text"
-          id="username"
-          v-model="input.username"
+          type="email"
+          id="email"
+          v-model="input.email"
           class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
         />
       </div>
@@ -44,20 +44,38 @@ export default {
   data() {
     return {
       input: {
-        username: '',
+        email: '',
         password: '',
       },
       output: '',
     };
   },
   methods: {
-    login() {
-      // make sure username OR password are not empty
-      if (this.input.username !== '' || this.input.password !== '') {
-        this.output = 'Authentication complete';
+    async login() {
+      // Make sure all fields are filled
+      if (!this.input.email || !this.input.password) {
+        this.output = 'Veuillez remplir tous les champs';
+        console.log(this.input);
+        return;
+      }
+
+      // Envoyer une requête POST à votre serveur pour connecter l'utilisateur
+      const response = await fetch(import.meta.env.VITE_SERVER_URL + '/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.input),
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        this.output = 'Connexion réussie !';
         this.$router.push('/');
+      } else if (response.status === 401) {
+        this.output = 'Email ou mot de passe incorrect';
       } else {
-        this.output = 'Nom / Mot de passe incorrect !';
+        this.output = 'Une erreur est survenue';
       }
     },
   },
