@@ -5,47 +5,29 @@
       <h2 class="my-2 text-2xl">Inscription</h2>
 
       <div class="mb-4">
-        <label for="username" class="block text-sm font-medium text-gray-700">Nom <span style="color: red;">*</span></label>
+        <label for="lastname" class="block text-sm font-medium text-gray-700">Nom <span style="color: red;">*</span></label>
         <input
           type="text"
-          id="username"
-          v-model="input.username"
+          id="lastname"
+          v-model="input.lastname"
           class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
       </div>
 
       <div class="mb-4">
-        <label for="firstName" class="block text-sm font-medium text-gray-700">Prénom  <span style="color: red;">*</span></label>
+        <label for="firstname" class="block text-sm font-medium text-gray-700">Prénom  <span style="color: red;">*</span></label>
         <input
           type="text"
-          id="firstName"
-          v-model="input.firstName"
+          id="firstname"
+          v-model="input.firstname"
           class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
       </div>
 
       <div class="mb-4">
-        <label for="companyName" class="block text-sm font-medium text-gray-700">Societé  <span style="color: red;">*</span></label>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email <span style="color: red;">*</span></label>
         <input
-          type="text"
-          id="companyName"
-          v-model="input.companyName"
-          class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
-      </div>
-
-      <div class="mb-4">
-        <label for="kBis" class="block text-sm font-medium text-gray-700">KBIS  <span style="color: red;">*</span></label>
-        <input
-          type="text"
-          id="kBis"
-          v-model="input.kBis"
-          class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
-      </div>
-
-      <div class="mb-4">
-        <label for="devise" class="block text-sm font-medium text-gray-700">Devise  <span style="color: red;">*</span></label>
-        <input
-          type="text"
-          id="devise"
-          v-model="input.devise"
+          type="email"
+          id="email"
+          v-model="input.email"
           class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
       </div>
 
@@ -59,9 +41,9 @@
       </div>
 
       <div class="mb-4">
-        <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirmez le mot de passe <span style="color: red;">*</span></label>
+        <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirmez le mot de passe<span style="color: red;">*</span></label>
         <input
-          type="confirmPassword"
+          type="password"
           id="confirmPassword"
           v-model="input.confirmPassword"
           class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
@@ -70,8 +52,8 @@
       <button
         class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         type="submit"
-        v-on:click.prevent="login()">
-        Login
+        v-on:click.prevent="register()">
+        Register
       </button>
 
     </form>
@@ -82,31 +64,50 @@
 
 <script>
 export default {
-  name: 'LoginView',
+  name: 'RegisterView',
   data() {
     return {
       input: {
-        username: '',
-        firstName: '',
+        lastname: '',
+        firstname: '',
+        email: '',
         password: '',
-        companyName: '',
-        kBis: '',
-        devise: '',
         confirmPassword: '',
       },
       output: '',
     };
   },
   methods: {
-    login() {
-      // make sure username OR password are not empty
-      if (this.input.username !== '' || this.input.firstName !== '' || this.input.password !== ''
-          || this.input.companyName !== '' || this.input.kBis !== '' || this.input.devise !== ''
-          || this.input.confirmPassword !== '') {
-        this.output = 'Authentication complete';
-        this.$router.push('/home');
+    async register() {
+      // Make sure all fields are filled
+      if (!this.input.lastname || !this.input.firstname || !this.input.email || !this.input.password || !this.input.confirmPassword) {
+        this.output = 'Veuillez remplir tous les champs';
+        console.log(this.input);
+        return;
+      }
+
+      if (this.input.password !== this.input.confirmPassword) {
+        this.output = 'Les mots de passe ne correspondent pas';
+        console.log(this.input);
+        return;
+      }
+
+      // Envoyer une requête POST à votre serveur pour inscrire l'utilisateur
+      const response = await fetch('http://localhost:' + process.env.SERVER_PORT + '/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.input),
+      });
+
+      if (response.ok) {
+        this.output = 'Inscription réussie !';
+        this.$router.push('/login');
+      } else if (response.status === 409) {
+        this.output = 'Cet email est déjà utilisé';
       } else {
-        this.output = 'Certains champs ne sont pas renseignés';
+        this.output = 'Une erreur est survenue';
       }
     },
   },

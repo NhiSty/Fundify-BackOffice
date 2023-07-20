@@ -55,7 +55,7 @@ export default {
       // make sure username OR password are not empty
       if (this.input.username !== '' || this.input.password !== '') {
         this.output = 'Authentication complete';
-        this.$router.push('/home');
+        this.$router.push('/');
       } else {
         this.output = 'Nom / Mot de passe incorrect !';
       }
