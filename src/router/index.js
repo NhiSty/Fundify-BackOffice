@@ -4,6 +4,7 @@ import ProfileView from '../views/ProfileView.vue';
 import AdminView from '../views/AdminView.vue';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
+import CartView from '../views/CartView.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -38,6 +39,11 @@ const router = createRouter({
       name: 'profile',
       component: ProfileView,
     },
+    {
+      path: '/cart',
+      name: 'cart',
+      component: CartView
+    }
   ],
 });
 
