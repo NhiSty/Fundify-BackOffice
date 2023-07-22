@@ -59,7 +59,7 @@ export default {
         return;
       }
 
-      // Envoyer une requête POST à votre serveur pour connecter l'utilisateur
+      // Send a POST request to your server to login the user
       const response = await fetch(import.meta.env.VITE_SERVER_URL + '/api/auth/login', {
         method: 'POST',
         headers: {

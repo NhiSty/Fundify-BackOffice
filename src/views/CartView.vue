@@ -1,29 +1,44 @@
 <script setup>
-import { useStore } from 'vuex';
 import jwt_decode from "jwt-decode";
+import { useStore } from 'vuex';
 
 const store = useStore();
 const product = store.state.selectedProduct;
 
-// Get the user ID from the 'token' cookie, which is a JWT
+let userId = '';
 const cookies = document.cookie.split(';');
 for (let i = 0; i < cookies.length; i++) {
   const cookie = cookies[i].trim();
   if (cookie.startsWith('token=')) {
     const token = cookie.substring('token='.length, cookie.length);
     const decoded = jwt_decode(token);
-    input.userId = decoded.id;
+    userId = decoded.id;
+  } else {
+    console.log('No token found');
   }
 }
 
 const input = {
   amount: product.price,
   merchantId: 1,
-  userId: decoded.id,
+  userId: userId,
   currency: '',
-  status: '',
 };
 
+const pay = async () => {
+  try {
+    fetch(import.meta.env.VITE_SERVER_URL + '/api/transition/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(input),
+    });
+  } catch (error) {
+    console.log(error);
+    console.log(document.cookie.split(';').find(cookie => cookie.trim().startsWith('token=')).split('=')[1]);
+  }
+};
 </script>
 
 <template>
