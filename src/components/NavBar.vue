@@ -15,19 +15,17 @@ onMounted(() => {
 });
 
 const logout = async () => {
-  try {
-    const response = await fetch(import.meta.env.VITE_SERVER_URL + '/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include'
-    });
-
-    if (!response.ok) {
-      throw new Error('Logout failed');
-    }
-
+  // Send a get request to the server to logout the user
+  const response = await fetch(import.meta.env.VITE_SERVER_URL + '/api/auth/logout', {
+    method: 'GET',
+    credentials: 'include',
+  });
+  if (response.ok) {
     isLoggedIn.value = false;
-  } catch (error) {
-    console.error(error);
+    console.log('Navbar is ' + isLoggedIn.value);
+    window.location.href = '/';
+  } else {
+    console.log('Une erreur est survenue');
   }
 };
 </script>
