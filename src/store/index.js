@@ -33,7 +33,7 @@ export default createStore({
           isLoggedIn: true,
           isMerchant: decoded.approved !== undefined,
           isApproved: decoded.approved === true,
-          isAdmin: decoded.admin === true,
+          isAdmin: decoded.isAdmin === true,
         });
       } else {
         commit('setAuthData', {
