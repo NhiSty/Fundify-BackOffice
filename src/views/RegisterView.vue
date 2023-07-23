@@ -57,7 +57,12 @@
       </button>
 
     </form>
-    <h3 class="text-lg text-center font-medium text-red-600 mt-8">
+
+    <router-link :to="`/merchant/register`" class="text-center block mt-4 text-sm font-medium text-gray-700 hover:underline">
+      Vous êtes un commerçant ?
+    </router-link>
+
+    <h3 class="text-lg text-center font-medium text-red-600 mt-8" v-if="this.output">
       {{ this.output }}
     </h3>
   </template>
