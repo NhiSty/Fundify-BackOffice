@@ -1,15 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+// @todo Uncomment this when the 401 error is fixed.
+// import { useRouter } from 'vue-router';
 
-// Crée une référence pour stocker les marchands
 const marchands = ref([]);
 
-// Récupère le router
-const router = useRouter();
+// @todo Uncomment this when the 401 error is fixed.
+// const router = useRouter();
 
 onMounted(async () => {
-  // Envoyer une requête GET pour récupérer les marchands du serveur
   const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/admin/merchants`, {
     method: 'GET',
     headers: {

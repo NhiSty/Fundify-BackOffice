@@ -25,7 +25,6 @@ const isLoggedIn = computed(() => store.state.isLoggedIn);
 const isMerchant = computed(() => store.state.isMerchant);
 
 const addToCart = () => {
-
   const product = {
     title: props.title,
     description: props.description,

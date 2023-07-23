@@ -40,17 +40,17 @@
 
 <script>
 export default {
-name: 'MerchantLoginView',
-data() {
-  return {
-    input: {
-      contactEmail: '',
-      password: '',
-    },
-    output: '',
-  };
-},
-methods: {
+  name: 'MerchantLoginView',
+  data() {
+    return {
+      input: {
+        contactEmail: '',
+        password: '',
+      },
+      output: '',
+    };
+  },
+  methods: {
     async login() {
       // Make sure all fields are filled
       if (!this.input.contactEmail || !this.input.password) {
@@ -60,7 +60,7 @@ methods: {
       }
 
       // Send a POST request to your server to login the user
-      const response = await fetch(import.meta.env.VITE_SERVER_URL + '/api/auth/merchant/login', {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/merchant/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

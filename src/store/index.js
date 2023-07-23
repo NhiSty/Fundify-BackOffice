@@ -1,6 +1,6 @@
-// store.js
-import { createStore } from 'vuex'
-import jwt_decode from 'jwt-decode';
+/* eslint-disable no-param-reassign */
+import { createStore } from 'vuex';
+import jwtDecode from 'jwt-decode';
 
 export default createStore({
   state: {
@@ -28,7 +28,7 @@ export default createStore({
     checkAuth({ commit }) {
       const token = document.cookie.split(';').find((cookie) => cookie.trim().startsWith('token='));
       if (token) {
-        const decoded = jwt_decode(token.split('=')[1]);
+        const decoded = jwtDecode(token.split('=')[1]);
         commit('setAuthData', {
           isLoggedIn: true,
           isMerchant: decoded.approved !== undefined,
@@ -45,7 +45,7 @@ export default createStore({
       }
     },
     async logout({ commit }) {
-      const response = await fetch(import.meta.env.VITE_SERVER_URL + '/api/auth/logout', {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/logout`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -56,11 +56,11 @@ export default createStore({
           isApproved: false,
           isAdmin: false,
         });
-        console.log('Navbar is ' + this.state.isLoggedIn);
+        console.log(`Navbar is ${this.state.isLoggedIn}`);
         window.location.href = '/';
       } else {
         console.log('Une erreur est survenue');
       }
-    }
-  }
+    },
+  },
 });

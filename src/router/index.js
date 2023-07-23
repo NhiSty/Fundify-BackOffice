@@ -39,18 +39,18 @@ const router = createRouter({
     {
       path: '/cart',
       name: 'cart',
-      component: CartView
+      component: CartView,
     },
     {
       path: '/merchant/register',
       name: 'merchant register',
-      component: MerchantRegisterView
+      component: MerchantRegisterView,
     },
     {
       path: '/merchant/login',
       name: 'merchant login',
-      component: MerchantLoginView
-    }
+      component: MerchantLoginView,
+    },
   ],
 });
 

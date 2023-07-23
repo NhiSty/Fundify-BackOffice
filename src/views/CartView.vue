@@ -1,5 +1,5 @@
 <script setup>
-import jwt_decode from "jwt-decode";
+import jwtDecode from 'jwt-decode';
 import { useStore } from 'vuex';
 
 const store = useStore();
@@ -7,11 +7,11 @@ const product = store.state.selectedProduct;
 
 let userId = '';
 const cookies = document.cookie.split(';');
-for (let i = 0; i < cookies.length; i++) {
+for (let i = 0; i < cookies.length; i += 1) {
   const cookie = cookies[i].trim();
   if (cookie.startsWith('token=')) {
     const token = cookie.substring('token='.length, cookie.length);
-    const decoded = jwt_decode(token);
+    const decoded = jwtDecode(token);
     userId = decoded.id;
   } else {
     console.log('No token found');
@@ -21,13 +21,13 @@ for (let i = 0; i < cookies.length; i++) {
 const input = {
   amount: product.price,
   merchantId: 1,
-  userId: userId,
+  userId,
   currency: '',
 };
 
 const pay = async () => {
   try {
-    fetch(import.meta.env.VITE_SERVER_URL + '/api/transition/create', {
+    fetch(`${import.meta.env.VITE_SERVER_URL}/api/transition/create`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ const pay = async () => {
     });
   } catch (error) {
     console.log(error);
-    console.log(document.cookie.split(';').find(cookie => cookie.trim().startsWith('token=')).split('=')[1]);
+    console.log(document.cookie.split(';').find((cookie) => cookie.trim().startsWith('token=')).split('=')[1]);
   }
 };
 </script>

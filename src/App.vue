@@ -1,7 +1,7 @@
 <script setup>
 import { RouterView } from 'vue-router';
-import NavBar from './components/NavBar.vue';
 import { useStore } from 'vuex';
+import NavBar from './components/NavBar.vue';
 
 const store = useStore();
 store.dispatch('checkAuth');

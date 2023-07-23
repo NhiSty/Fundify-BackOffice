@@ -63,7 +63,7 @@ export default {
       }
 
       // Send a POST request to your server to login the user
-      const response = await fetch(import.meta.env.VITE_SERVER_URL + '/api/auth/login', {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -16,6 +16,7 @@
     ],
     "rules": {
         "yoda": "error",
-        "no-console": "error"
+        "no-console": "warn",
+        "max-len": "off"
     }
 }
