@@ -1,4 +1,5 @@
 <script setup>
+import { defineProps, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
@@ -20,7 +21,11 @@ const props = defineProps({
   },
 });
 
+const isLoggedIn = computed(() => store.state.isLoggedIn);
+const isMerchant = computed(() => store.state.isMerchant);
+
 const addToCart = () => {
+
   const product = {
     title: props.title,
     description: props.description,
@@ -37,22 +42,24 @@ const addToCart = () => {
     class="w-full max-w-sm bg-white border border-gray-200
      rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
   >
-    <a href="#">
+    <div>
       <img
         class="p-8 rounded-t-lg"
         src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fexternal.webstorage.gr%2FProduct-Images%2F1421066%2Fiphone11-black-1000-1421066.jpg&f=1&nofb=1&ipt=ecf1760f540b8ba823b6105f207c085e32aaf8164be7263966f6c3bc327d1dce&ipo=images"
         alt="product image"
       />
-    </a>
+    </div>
     <div class="px-5 pb-5">
-      <a href="#">
+      <div>
         <h5
           class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"
         >
           {{ title }}
         </h5>
-        <p>{{ description }}</p>
-      </a>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300"
+          >{{ description }}
+        </p>
+      </div>
       <div class="flex items-center mt-2.5 mb-5">
         <svg
           aria-hidden="true"
@@ -150,6 +157,7 @@ const addToCart = () => {
           >${{ price }}</span
         >
         <button
+          v-if="isLoggedIn && !isMerchant"
           @click="addToCart"
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4
            focus:outline-none focus:ring-blue-300 font-medium rounded-lg

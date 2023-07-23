@@ -1,32 +1,14 @@
 <!-- eslint-disable max-len -->
 <script setup>
-import { onMounted, ref } from 'vue';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
-let isLoggedIn = ref(false);
+const store = useStore();
 
-onMounted(() => {
-  if (document.cookie.split(';').some((cookie) => cookie.trim().startsWith('token='))) {
-    isLoggedIn.value = true;
-    console.log('Navbar is ' + isLoggedIn.value);
-  } else {
-    isLoggedIn.value = false;
-    console.log('Navbar is ' + isLoggedIn.value);
-  }
-});
+const isLoggedIn = computed(() => store.state.isLoggedIn);
 
 const logout = async () => {
-  // Send a get request to the server to logout the user
-  const response = await fetch(import.meta.env.VITE_SERVER_URL + '/api/auth/logout', {
-    method: 'GET',
-    credentials: 'include',
-  });
-  if (response.ok) {
-    isLoggedIn.value = false;
-    console.log('Navbar is ' + isLoggedIn.value);
-    window.location.href = '/';
-  } else {
-    console.log('Une erreur est survenue');
-  }
+  await store.dispatch('logout');
 };
 </script>
 
@@ -122,26 +104,23 @@ const logout = async () => {
                 >Produits</a
               >
             </li>
-            <li>
+            <li v-if="!isLoggedIn">
               <a
                 href="/register"
                 class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-                v-if="!isLoggedIn"
                 >Inscription</a
               >
             </li>
-            <li>
+            <li v-if="!isLoggedIn">
               <a
                 href="/login"
                 class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-                v-if="!isLoggedIn"
                 >Connexion</a
               >
             </li>
-            <li>
+            <li v-if="isLoggedIn">
               <button
                 class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-                v-if="isLoggedIn"
                 v-on:click.prevent="logout()"
                 >Déconnexion</button
               >
