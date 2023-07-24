@@ -1,10 +1,14 @@
 <script setup>
 import { RouterView } from 'vue-router';
 import { useStore } from 'vuex';
+import { onMounted } from 'vue';
 import NavBar from './components/NavBar.vue';
 
 const store = useStore();
-store.dispatch('checkAuth');
+
+onMounted(async () => {
+  await store.dispatch('checkAuth');
+});
 </script>
 
 <template>
