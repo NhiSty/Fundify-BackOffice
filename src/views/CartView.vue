@@ -21,19 +21,21 @@ for (let i = 0; i < cookies.length; i += 1) {
 const input = {
   amount: product.price,
   merchantId: 1,
-  userId,
+  userId: userId,
   currency: '',
 };
 
 const pay = async () => {
   try {
-    fetch(`${import.meta.env.VITE_SERVER_URL}/api/transition/create`, {
+    const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/transaction/create`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(input),
+      credentials: 'include',
     });
+    console.log(response);
   } catch (error) {
     console.log(error);
     console.log(document.cookie.split(';').find((cookie) => cookie.trim().startsWith('token=')).split('=')[1]);
