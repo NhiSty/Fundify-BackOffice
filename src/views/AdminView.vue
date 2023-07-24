@@ -6,6 +6,28 @@ const merchants = ref([]);
 
 const router = useRouter();
 
+// Function to fetch merchants
+const getMerchants = async () => {
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/admin/merchants`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    console.log(data.merchants[0]);
+    merchants.value = data.merchants;
+  } else if (response.status === 401) {
+    console.error('You are not authorized.');
+    router.push('/login');
+  } else {
+    console.error('An error occurred.');
+  }
+};
+
 // Approve a merchant
 const approve = async (id) => {
   const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/admin/merchant/validate`, {
@@ -49,44 +71,22 @@ const reject = async (id) => {
 
   if (confirm) {
     const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/admin/merchant/reject`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ id }),
-    credentials: 'include',
-  });
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+      credentials: 'include',
+    });
 
-  if (response.ok) {
+    if (response.ok) {
     // Refresh the merchant list after successful rejection
-    getMerchants();
-  } else {
-    console.log('An error occurred while rejecting the merchant.');
-  }
+      getMerchants();
+    } else {
+      console.log('An error occurred while rejecting the merchant.');
+    }
   }
 };
-
-// Function to fetch merchants
-const getMerchants = async () => {
-  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/admin/merchants`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  });
-
-  if (response.ok) {
-    const data = await response.json();
-    console.log(data.merchants[0]);
-    merchants.value = data.merchants;
-  } else if (response.status === 401) {
-    console.log('You are not authorized.');
-    router.push('/login');
-  } else {
-    console.log('An error occurred.');
-  }
-}
 
 onMounted(getMerchants);
 </script>

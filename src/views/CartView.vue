@@ -21,7 +21,7 @@ for (let i = 0; i < cookies.length; i += 1) {
 const input = {
   amount: product.price,
   merchantId: 1,
-  userId: userId,
+  userId,
   currency: '',
 };
 
