@@ -1,10 +1,17 @@
 <script setup>
-import { RouterView } from 'vue-router';
+import { RouterView, useRoute } from 'vue-router';
 import { useStore } from 'vuex';
-import { onMounted } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import NavBar from './components/NavBar.vue';
 
 const store = useStore();
+const route = useRoute();
+
+const containerClass = ref('');
+
+watch(route, (newRoute) => {
+  containerClass.value = newRoute.path !== '/' ? 'container mx-auto mt-8' : '';
+});
 
 onMounted(async () => {
   await store.dispatch('checkAuth');
@@ -16,7 +23,7 @@ onMounted(async () => {
     <header>
       <NavBar />
     </header>
-    <div class="container mx-auto mt-8">
+    <div :class="containerClass">
       <Suspense>
         <RouterView />
       </Suspense>
