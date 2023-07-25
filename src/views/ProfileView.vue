@@ -1,6 +1,6 @@
 <script setup>
-import {useStore} from 'vuex';
-import {computed} from 'vue';
+import { useStore } from 'vuex';
+import { ref, computed } from 'vue';
 
 const store = useStore();
 
@@ -16,7 +16,25 @@ const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/${i
 
 const infos = await request.json();
 
-console.log(infos);
+const clientToken = ref(infos.clientToken);
+const clientSecret = ref(infos.clientSecret);
+
+async function generateNewCredentials() {
+  const requestCredentials = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/account/update`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      merchantId: id.value,
+    }),
+    credentials: 'include',
+  });
+
+  const response = await requestCredentials.json();
+  clientToken.value = response.clientToken;
+  clientSecret.value = response.clientSecret;
+}
 
 </script>
 <template>
@@ -37,8 +55,15 @@ console.log(infos);
         <dd class="text-lg font-semibold"> confirmation url : {{ infos.confirmationRedirectUrl }}</dd>
         <dd class="text-lg font-semibold"> cancel url : {{ infos.cancellationRedirectUrl }}</dd>
         <dd class="text-lg font-semibold"> currency : {{ infos.currency }}</dd>
-        <dd class="text-lg font-semibold">  token : {{ infos.clientToken }}</dd>
-        <dd class="text-lg font-semibold"> secret : {{ infos.clientSecret }}</dd>
+        <dd class="text-lg font-semibold">  token : {{ clientToken }}</dd>
+        <dd class="text-lg font-semibold"> secret : {{ clientSecret }}</dd>
+
+        <button class="px-4 py-2 mt-5 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-gray-900 rounded-md hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
+            @click="generateNewCredentials"
+        >
+          Générer des nouveaux crédentials
+        </button>
+
     </div>
   </div>
 </template>
