@@ -10,6 +10,19 @@ export default createStore({
     isApproved: false,
     isAdmin: false,
   },
+  getters: {
+    getSelectedProduct(state) {
+      return state.selectedProduct;
+    },
+    getAuthData(state) {
+      return {
+        isLoggedIn: state.isLoggedIn,
+        isMerchant: state.isMerchant,
+        isApproved: state.isApproved,
+        isAdmin: state.isAdmin,
+      };
+    },
+  },
   mutations: {
     setSelectedProduct(state, product) {
       state.selectedProduct = product;
