@@ -61,26 +61,25 @@ export default {
         console.log(this.input);
         return;
       }
-      try {
-        console.log(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`);
-        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(this.input),
-          credentials: 'include',
-        });
-        if (response.ok) {
-          this.output = 'Connexion réussie !';
-          this.$router.push('/');
-        } else if (response.status === 401) {
-          this.output = 'Email ou mot de passe incorrect';
-        } else {
-          this.output = 'Une erreur est survenue';
-        }
-      } catch (error) {
-        console.log(error);
+
+      // Send a POST request to your server to login the user
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.input),
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        this.output = 'Connexion réussie !';
+        await this.$store.dispatch('checkAuth');
+        this.$router.push('/');
+      } else if (response.status === 401) {
+        this.output = 'Email ou mot de passe incorrect';
+      } else {
+        this.output = 'Une erreur est survenue';
       }
     },
   },

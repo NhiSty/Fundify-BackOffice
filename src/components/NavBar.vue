@@ -5,8 +5,8 @@ import { useStore } from 'vuex';
 
 const store = useStore();
 
-const isLoggedIn = computed(() => store.state.isLoggedIn);
-const isAdmin = computed(() => store.state.isAdmin);
+const isLoggedIn = computed(() => store.getters.getAuthData.isLoggedIn);
+const isAdmin = computed(() => store.getters.getAuthData.isAdmin);
 
 const logout = async () => {
   await store.dispatch('logout');
