@@ -17,7 +17,9 @@ onMounted(async () => {
       <NavBar />
     </header>
     <div class="container mx-auto mt-8">
-      <RouterView />
+      <Suspense>
+        <RouterView />
+      </Suspense>
     </div>
   </div>
 </template>

@@ -2,13 +2,16 @@
 import { createStore } from 'vuex';
 import jwtDecode from 'jwt-decode';
 
-export default createStore({
-  state: {
-    selectedProduct: null,
-    isLoggedIn: false,
-    isMerchant: false,
-    isApproved: false,
-    isAdmin: false,
+const store = createStore({
+  state() {
+    return {
+      id: null,
+      selectedProduct: null,
+      isLoggedIn: false,
+      isMerchant: false,
+      isApproved: false,
+      isAdmin: false,
+    };
   },
   getters: {
     getSelectedProduct(state) {
@@ -28,6 +31,7 @@ export default createStore({
       state.selectedProduct = product;
     },
     setAuthData(state, payload) {
+      state.id = payload.id;
       state.isLoggedIn = payload.isLoggedIn;
       state.isMerchant = payload.isMerchant;
       state.isApproved = payload.isApproved;
@@ -43,13 +47,15 @@ export default createStore({
       if (token) {
         const decoded = jwtDecode(token.split('=')[1]);
         commit('setAuthData', {
+          id: decoded.id,
           isLoggedIn: true,
-          isMerchant: decoded.approved !== undefined,
+          isMerchant: decoded.approved === true,
           isApproved: decoded.approved === true,
           isAdmin: decoded.isAdmin === true,
         });
       } else {
         commit('setAuthData', {
+          id: null,
           isLoggedIn: false,
           isMerchant: false,
           isApproved: false,
@@ -77,3 +83,5 @@ export default createStore({
     },
   },
 });
+
+export default store;

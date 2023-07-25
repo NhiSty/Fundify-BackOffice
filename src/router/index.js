@@ -5,7 +5,6 @@ import AdminView from '../views/AdminView.vue';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import CartView from '../views/CartView.vue';
-import MerchantRegisterView from '../views/MerchantRegisterView.vue';
 import MerchantLoginView from '../views/MerchantLoginView.vue';
 
 const router = createRouter({
@@ -40,11 +39,6 @@ const router = createRouter({
       path: '/cart',
       name: 'cart',
       component: CartView,
-    },
-    {
-      path: '/merchant/register',
-      name: 'merchant register',
-      component: MerchantRegisterView,
     },
     {
       path: '/merchant/login',
