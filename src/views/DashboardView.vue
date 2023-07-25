@@ -5,7 +5,7 @@
     </div>
     <div class="w-full mb-6">
       <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Argent Généré</h3>
+        <h3 class="text-xl p-3">Argent généré par jour</h3>
         <div class="p-3">
           <canvas id="revenueChart" ref="revenueChart"></canvas>
         </div>
@@ -13,7 +13,7 @@
     </div>
     <div class="w-full md:w-1/2">
       <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Transactions Réussies</h3>
+        <h3 class="text-xl p-3">Transactions réussies</h3>
         <div class="p-3">
           <canvas id="successfullTransactionsChart" ref="successfullTransactionsChart"></canvas>
         </div>
@@ -23,11 +23,28 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Chart } from 'chart.js';
 import { BarController, CategoryScale, LinearScale, DoughnutController } from 'chart.js';
 import { ArcElement, BarElement, LineElement } from 'chart.js';
 import { Title, Tooltip, Legend } from 'chart.js';
+import { useStore } from 'vuex';
+
+const store = useStore();
+
+const id = computed(() => store.state.id);
+
+console.log(id.value);
+
+const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/${id.value}/transactions`, {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  credentials: 'include',
+});
+
+const infos = await request.json();
 
 Chart.register(BarController, CategoryScale, LinearScale, DoughnutController, ArcElement, BarElement, LineElement, Title, Tooltip, Legend);
 
@@ -44,15 +61,33 @@ const chartOptions = {
   },
 };
 
+// Compute the number of successful and failed transactions
+const successCount = infos.filter(info => info.status === 'CONFIRMED').length;
+const failureCount = infos.filter(info => info.status === 'PENDING').length;
+
+const dailyTotals = infos.reduce((totals, info) => {
+  const date = new Date(info.createdAt).toISOString().split('T')[0];
+  if (!totals[date]) totals[date] = 0;
+  totals[date] += parseFloat(info.amount);
+  return totals;
+}, {});
+
+const dailyTotalArray = Object.entries(dailyTotals);
+
+dailyTotalArray.sort((a, b) => new Date(a[0]) - new Date(b[0]));
+
+const dates = dailyTotalArray.map(entry => entry[0]);
+const totals = dailyTotalArray.map(entry => entry[1]);
+
 onMounted(() => {
   new Chart(revenueChart.value.getContext('2d'), {
     type: 'bar',
     data: {
-      labels: ['John Doe', 'Michel Berger', 'Amin Nairi', 'Adrien Morin'],
+      labels: dates,  // utiliser les dates extraites
       datasets: [
         {
           label: 'Transactions généré',
-          data: [2500, 1500, 3500, 1500],
+          data: totals,  // utiliser les totaux extraits
           backgroundColor: '#00C853',
           borderColor: '#00C853',
           borderWidth: 1,
@@ -62,6 +97,7 @@ onMounted(() => {
     options: chartOptions,
   });
 
+
   new Chart(successfullTransactionsChart.value.getContext('2d'), {
     type: 'doughnut',
     data: {
@@ -69,7 +105,7 @@ onMounted(() => {
       datasets: [
         {
           label: 'Transactions',
-          data: [3, 2],
+          data: [successCount, failureCount],
           backgroundColor: ['#00C853', '#FF1744'],
           hoverOffset: 4,
         },
