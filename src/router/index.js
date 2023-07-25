@@ -1,11 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import ProfileView from '../views/ProfileView.vue';
+import DashboardView from '../views/DashboardView.vue';
 import AdminView from '../views/AdminView.vue';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
-import CartView from '../views/CartView.vue';
-import MerchantRegisterView from '../views/MerchantRegisterView.vue';
 import MerchantLoginView from '../views/MerchantLoginView.vue';
 
 const router = createRouter({
@@ -37,14 +36,9 @@ const router = createRouter({
       component: ProfileView,
     },
     {
-      path: '/cart',
-      name: 'cart',
-      component: CartView,
-    },
-    {
-      path: '/merchant/register',
-      name: 'merchant register',
-      component: MerchantRegisterView,
+      path: '/dashboard',
+      name: 'dashboard',
+      component: DashboardView,
     },
     {
       path: '/merchant/login',

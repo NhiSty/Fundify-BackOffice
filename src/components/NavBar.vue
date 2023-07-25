@@ -7,7 +7,8 @@ const store = useStore();
 
 const isLoggedIn = computed(() => store.getters.getAuthData.isLoggedIn);
 const isAdmin = computed(() => store.getters.getAuthData.isAdmin);
-
+const isMerchant = computed(() => store.getters.getAuthData.isMerchant);
+const isApproved = computed(() => store.getters.getAuthData.isApproved);
 const logout = async () => {
   await store.dispatch('logout');
 };
@@ -106,6 +107,18 @@ const logout = async () => {
               <router-link to="/login"
                 class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                 >Connexion</router-link
+              >
+            </li>
+            <li v-if="isApproved">
+              <router-link to="/dashboard"
+                           class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+              >Dashboard</router-link
+              >
+            </li>
+            <li v-if="isMerchant || isApproved">
+              <router-link to="/profile"
+                           class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+              >Mon compte</router-link
               >
             </li>
             <li v-if="isLoggedIn">

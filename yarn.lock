@@ -957,6 +957,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kurkle/color@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@kurkle/color@npm:0.3.2"
+  checksum: 79e97b31f8f6efb28c69d373f94b0c7480226fe8ec95221f518ac998e156444a496727ce47de6d728eb5c3369288e794cba82cae34253deb0d472d3bfe080e49
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -1790,6 +1797,15 @@ __metadata:
   version: 1.0.2
   resolution: "char-regex@npm:1.0.2"
   checksum: b563e4b6039b15213114626621e7a3d12f31008bdce20f9c741d69987f62aeaace7ec30f6018890ad77b2e9b4d95324c9f5acfca58a9441e3b1dcdd1e2525d17
+  languageName: node
+  linkType: hard
+
+"chart.js@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "chart.js@npm:4.3.1"
+  dependencies:
+    "@kurkle/color": ^0.3.0
+  checksum: d0c9e727e1cf1bf4b8a85599f4ec89a48466d549aa78d2e0280b1269e2819ed28aa97d46f97993383be8d66e411a9dd539797d759e538eaf9649cfff9be1044d
   languageName: node
   linkType: hard
 
@@ -2789,12 +2805,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fundify-front@workspace:.":
+"fundify-backoffice@workspace:.":
   version: 0.0.0-use.local
-  resolution: "fundify-front@workspace:."
+  resolution: "fundify-backoffice@workspace:."
   dependencies:
     "@vitejs/plugin-vue": ^4.1.0
     autoprefixer: ^10.4.14
+    chart.js: ^4.3.1
     eslint: ^7.32.0 || ^8.2.0
     eslint-config-airbnb-base: ^15.0.0
     eslint-plugin-import: ^2.25.2
