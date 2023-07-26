@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import AddAdmin from '../components/AddAdmin.vue';
 
 const merchants = ref([]);
 const users = ref([]);
@@ -164,6 +165,7 @@ onMounted(async () => {
           <tr>
             <th scope="col" class="px-6 py-3">Nom</th>
             <th scope="col" class="px-6 py-3">Prénom</th>
+            <th scope="col" class="px-6 py-3">Email</th>
             <th scope="col" class="px-6 py-3">Status</th>
             <th scope="col" class="px-6 py-3">Action</th>
           </tr>
@@ -175,6 +177,7 @@ onMounted(async () => {
               {{ merchant.contactLastName }}
             </th>
             <td class="px-6 py-4">{{ merchant.contactFirstName }}</td>
+            <td class="px-6 py-4">{{ merchant.contactEmail }}</td>
             <td class="px-6 py-4 bg-green-200 dark:bg-green-700 dark:text-green-300" v-if="merchant.approved">Approuvé
             </td>
             <td class="px-6 py-4 bg-red-200 dark:bg-red-700 dark:text-red-300" v-else>En attente</td>
@@ -244,6 +247,7 @@ onMounted(async () => {
         <p>Tu ferais mieux d'aller élever des chèvres dans le Larzac.</p>
         <p>Et même ça, c'est pas sûr que tu y arrives...</p>
       </div>
+      <AddAdmin />
     </div>
   </div>
 </template>

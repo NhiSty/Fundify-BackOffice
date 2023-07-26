@@ -2,7 +2,7 @@
 <!-- eslint-disable max-len -->
 <template>
     <form name="login-form" class="max-w-sm mx-auto">
-      <h2 class="my-2 text-2xl">Inscription Marchand</h2>
+      <h2 class="my-2 text-2xl">Nouveau client ? Par ici, je vous prie.</h2>
 
       <div class="mb-4">
         <label for="companyName" class="block text-sm font-medium text-gray-700">Nom de l'entreprise <span style="color: red;">*</span></label>
@@ -16,12 +16,13 @@
       <div class="mb-4">
         <label for="kbis" class="block text-sm font-medium text-gray-700">KBIS <span style="color: red;">*</span></label>
         <input
-          type="text"
+          type="file"
           id="kbis"
-          v-model="input.kbis"
-          class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+          accept="application/pdf"
+          @change="onFileChange"
+          class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+        />
       </div>
-
       <div class="mb-4">
         <label for="contactLastName" class="block text-sm font-medium text-gray-700">Nom <span style="color: red;">*</span></label>
         <input
@@ -100,7 +101,7 @@
         class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         type="submit"
         v-on:click.prevent="register()">
-        Register
+        C'est parti !
       </button>
 
     </form>
@@ -130,6 +131,19 @@ export default {
     };
   },
   methods: {
+    onFileChange(e) {
+      const file = e.target.files[0];
+      if (file && file.type === "application/pdf") {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          this.input.kbis = reader.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert("Veuillez télécharger un fichier PDF.");
+        this.input.kbis = '';
+      }
+    },
     async register() {
       // Make sure all fields are filled
       if (!this.input.companyName || !this.input.kbis || !this.input.contactLastName || !this.input.contactFirstName || !this.input.contactEmail || !this.input.password || !this.input.contactPhone || !this.input.confirmationRedirectUrl || !this.input.cancellationRedirectUrl || !this.input.currency) {
@@ -149,7 +163,7 @@ export default {
 
       if (response.ok) {
         this.output = 'Inscription réussie !';
-        this.$router.push('/merchant/login');
+        this.$router.push('/login');
       } else if (response.status === 409) {
         this.output = 'Cet email est déjà utilisé';
       } else {

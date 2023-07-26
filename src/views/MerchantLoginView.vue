@@ -2,7 +2,7 @@
 <!-- eslint-disable max-len -->
 <template>
   <form name="login-form" class="max-w-sm mx-auto">
-    <h2 class="my-2 text-2xl">Connexion marchand</h2>
+    <h2 class="my-2 text-2xl">Halte ! Qui va là ?</h2>
     <div class="mb-4">
       <label for="contactEmail" class="block text-sm font-medium text-gray-700"
         >Email:</label
@@ -30,9 +30,14 @@
       type="submit"
       v-on:click.prevent="login()"
     >
-      Login
+      C'est moi
     </button>
   </form>
+  <p class="text-center mt-4">
+    <router-link to="/register" class="text-indigo-600 hover:text-indigo-500">
+      Qu'entendez-vous par "pas encore inscrit" ?
+    </router-link>
+  </p>
   <h3 class="text-lg text-center font-medium text-red-600 mt-8" v-if="this.output">
     {{ this.output }}
   </h3>

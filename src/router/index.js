@@ -4,8 +4,8 @@ import ProfileView from '../views/ProfileView.vue';
 import DashboardView from '../views/DashboardView.vue';
 import AdminView from '../views/AdminView.vue';
 import LoginView from '../views/LoginView.vue';
-import RegisterView from '../views/RegisterView.vue';
 import MerchantLoginView from '../views/MerchantLoginView.vue';
+import MerchantRegisterView from '../views/MerchantRegisterView.vue';
 import ListingTransactionView from '../views/ListingTransactionView.vue';
 
 const router = createRouter({
@@ -16,16 +16,10 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/login',
-      name: 'login',
+      path: '/admin/login',
+      name: 'admin login',
       component: LoginView,
     },
-    {
-      path: '/register',
-      name: 'register',
-      component: RegisterView,
-    },
-
     {
       path: '/admin',
       name: 'admin',
@@ -47,9 +41,14 @@ const router = createRouter({
       component: DashboardView,
     },
     {
-      path: '/merchant/login',
-      name: 'merchant login',
+      path: '/login',
+      name: 'login',
       component: MerchantLoginView,
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: MerchantRegisterView,
     },
   ],
 });
