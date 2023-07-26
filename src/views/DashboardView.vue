@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center mb-4">
+  <div class="flex flex-col items-center mb-4" v-if="isApproved">
     <div class="mb-6">
       <h1 class="text-3xl font-semibold">Tableau de bord</h1>
     </div>
@@ -7,7 +7,7 @@
       <div class="border border-gray-300 shadow">
         <h3 class="text-xl p-3">Argent généré par jour</h3>
         <div class="p-3">
-          <canvas id="revenueChart" ref="revenueChart"></canvas>
+          <canvas ref="revenueChart"></canvas>
         </div>
       </div>
     </div>
@@ -15,36 +15,30 @@
       <div class="border border-gray-300 shadow">
         <h3 class="text-xl p-3">Transactions réussies</h3>
         <div class="p-3">
-          <canvas id="successfullTransactionsChart" ref="successfullTransactionsChart"></canvas>
+          <canvas ref="successfullTransactionsChart"></canvas>
         </div>
       </div>
     </div>
+  </div>
+  <div class="flex flex-col items-center mb-4" v-else-if="isMerchant">
+    <MerchantWaiting />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { Chart } from 'chart.js';
-import { BarController, CategoryScale, LinearScale, DoughnutController } from 'chart.js';
-import { ArcElement, BarElement, LineElement } from 'chart.js';
-import { Title, Tooltip, Legend } from 'chart.js';
+import {
+  Chart, BarController, CategoryScale, LinearScale, DoughnutController, ArcElement, BarElement, LineElement, Title, Tooltip, Legend,
+} from 'chart.js';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+import MerchantWaiting from '../components/MerchantWaiting.vue';
 
+const router = useRouter();
 const store = useStore();
-
 const id = computed(() => store.state.id);
-
-console.log(id.value);
-
-const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/${id.value}/transactions`, {
-  method: 'GET',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  credentials: 'include',
-});
-
-const infos = await request.json();
+const isApproved = computed(() => store.state.isApproved);
+const isMerchant = computed(() => store.state.isMerchant);
 
 Chart.register(BarController, CategoryScale, LinearScale, DoughnutController, ArcElement, BarElement, LineElement, Title, Tooltip, Legend);
 
@@ -61,57 +55,71 @@ const chartOptions = {
   },
 };
 
-// Compute the number of successful and failed transactions
-const successCount = infos.filter(info => info.status === 'CONFIRMED').length;
-const failureCount = infos.filter(info => info.status === 'PENDING').length;
+onMounted(async () => {
+  if (id.value === null) {
+    router.push('/login');
+  } else {
+    const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/${id.value}/transactions`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    });
 
-const dailyTotals = infos.reduce((totals, info) => {
-  const date = new Date(info.createdAt).toISOString().split('T')[0];
-  if (!totals[date]) totals[date] = 0;
-  totals[date] += parseFloat(info.amount);
-  return totals;
-}, {});
+    const infos = await request.json();
 
-const dailyTotalArray = Object.entries(dailyTotals);
+    const successCount = infos.filter((info) => info.status === 'CONFIRMED').length;
+    const failureCount = infos.filter((info) => info.status === 'PENDING').length;
 
-dailyTotalArray.sort((a, b) => new Date(a[0]) - new Date(b[0]));
+    const dailyTotals = infos.reduce((totals, info) => {
+      const date = new Date(info.createdAt).toISOString().split('T')[0];
+      const newTotals = { ...totals };
+      if (!newTotals[date]) newTotals[date] = 0;
+      newTotals[date] += parseFloat(info.amount);
+      return newTotals;
+    }, {});
 
-const dates = dailyTotalArray.map(entry => entry[0]);
-const totals = dailyTotalArray.map(entry => entry[1]);
+    const dailyTotalArray = Object.entries(dailyTotals);
+    dailyTotalArray.sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime());
 
-onMounted(() => {
-  new Chart(revenueChart.value.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: dates,  // utiliser les dates extraites
-      datasets: [
-        {
-          label: 'Transactions généré',
-          data: totals,  // utiliser les totaux extraits
-          backgroundColor: '#00C853',
-          borderColor: '#00C853',
-          borderWidth: 1,
+    const dates = dailyTotalArray.map((entry) => entry[0]);
+    const totals = dailyTotalArray.map((entry) => entry[1]);
+
+    if (revenueChart.value && successfullTransactionsChart.value) {
+      // eslint-disable-next-line
+      new Chart(revenueChart.value, {
+        type: 'bar',
+        data: {
+          labels: dates,
+          datasets: [{
+            label: 'Argent généré',
+            data: totals,
+            backgroundColor: '#6366F1',
+            borderColor: '#6366F1',
+            borderWidth: 1,
+          }],
         },
-      ],
-    },
-    options: chartOptions,
-  });
+        options: chartOptions,
+      });
 
-
-  new Chart(successfullTransactionsChart.value.getContext('2d'), {
-    type: 'doughnut',
-    data: {
-      labels: ['Réussies', 'Echouées'],
-      datasets: [
-        {
-          label: 'Transactions',
-          data: [successCount, failureCount],
-          backgroundColor: ['#00C853', '#FF1744'],
-          hoverOffset: 4,
+      // eslint-disable-next-line
+      new Chart(successfullTransactionsChart.value, {
+        type: 'doughnut',
+        data: {
+          labels: ['Transactions réussies', 'Transactions en attente'],
+          datasets: [{
+            label: 'Transactions',
+            data: [successCount, failureCount],
+            backgroundColor: ['#6366F1', '#F3F4F6'],
+            borderColor: ['#6366F1', '#F3F4F6'],
+            borderWidth: 1,
+          }],
         },
-      ],
-    },
-  });
+        options: chartOptions,
+      });
+    }
+  }
 });
 </script>
 

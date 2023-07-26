@@ -6,7 +6,6 @@ const store = createStore({
   state() {
     return {
       id: null,
-      selectedProduct: null,
       isLoggedIn: false,
       isMerchant: false,
       isApproved: false,
@@ -14,11 +13,9 @@ const store = createStore({
     };
   },
   getters: {
-    getSelectedProduct(state) {
-      return state.selectedProduct;
-    },
     getAuthData(state) {
       return {
+        id: state.id,
         isLoggedIn: state.isLoggedIn,
         isMerchant: state.isMerchant,
         isApproved: state.isApproved,
@@ -27,9 +24,6 @@ const store = createStore({
     },
   },
   mutations: {
-    setSelectedProduct(state, product) {
-      state.selectedProduct = product;
-    },
     setAuthData(state, payload) {
       state.id = payload.id;
       state.isLoggedIn = payload.isLoggedIn;
@@ -39,9 +33,6 @@ const store = createStore({
     },
   },
   actions: {
-    setProduct({ commit }, product) {
-      commit('setSelectedProduct', product);
-    },
     checkAuth({ commit }) {
       const token = document.cookie.split(';').find((cookie) => cookie.trim().startsWith('token='));
       if (token) {

@@ -5,6 +5,7 @@ import { ref, computed } from 'vue';
 const store = useStore();
 
 const id = computed(() => store.state.id);
+const isMerchant = computed(() => store.state.isMerchant);
 
 const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/${id.value}/account`, {
   method: 'GET',
@@ -45,9 +46,10 @@ async function generateNewCredentials() {
           src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
           alt="Bonnie image"
       />
-      <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">
+      <h2 class="mb-1 text-xl font-medium text-gray-900">
         {{ infos.contactFirstName }} {{ infos.contactLastName }}
-      </h5>
+      </h2>
+      <p class="text-lg font-semibold text-red-500 mb-4" v-if="isMerchant">Fait pas le malin, tu n'es pas encore approuvé !</p>
       <span class="text-sm text-gray-500 dark:text-gray-400">Marchand</span>
         <dd class="text-lg font-semibold"> Compagny name : {{ infos.companyName }}</dd>
         <dd class="text-lg font-semibold"> email : {{ infos.contactEmail }}</dd>
