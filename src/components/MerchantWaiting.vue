@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="mb-6">
-      <h1 class="text-3xl font-semibold">Tableau de bord</h1>
+      <h1 class="text-3xl font-semibold text-center">Tableau de bord</h1>
     </div>
-    <div class="w-full md:w-1/2">
+    <div class="w-full">
       <div class="border border-gray-300 shadow">
         <h3 class="text-xl p-3 text-center">En attente d'approbation</h3>
         <div class="p-3">
