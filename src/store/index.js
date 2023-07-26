@@ -49,7 +49,7 @@ const store = createStore({
         commit('setAuthData', {
           id: decoded.id,
           isLoggedIn: true,
-          isMerchant: decoded.approved === true,
+          isMerchant: decoded.approved === false,
           isApproved: decoded.approved === true,
           isAdmin: decoded.isAdmin === true,
         });

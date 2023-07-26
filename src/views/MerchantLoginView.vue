@@ -71,7 +71,8 @@ export default {
 
       if (response.ok) {
         this.output = 'Connexion réussie !';
-        this.$router.push('/');
+        await this.$store.dispatch('checkAuth');
+        this.$router.push('/profile');
       } else if (response.status === 401) {
         this.output = 'Email ou mot de passe incorrect';
       } else {
