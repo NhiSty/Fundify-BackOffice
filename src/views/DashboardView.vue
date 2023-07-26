@@ -87,7 +87,8 @@ onMounted(async () => {
     const totals = dailyTotalArray.map((entry) => entry[1]);
 
     if (revenueChart.value && successfullTransactionsChart.value) {
-      const revenueChartInstance = new Chart(revenueChart.value, {
+      // eslint-disable-next-line
+      new Chart(revenueChart.value, {
         type: 'bar',
         data: {
           labels: dates,
@@ -102,7 +103,8 @@ onMounted(async () => {
         options: chartOptions,
       });
 
-      const successfullTransactionsChartInstance = new Chart(successfullTransactionsChart.value, {
+      // eslint-disable-next-line
+      new Chart(successfullTransactionsChart.value, {
         type: 'doughnut',
         data: {
           labels: ['Transactions réussies', 'Transactions en attente'],

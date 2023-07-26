@@ -133,14 +133,14 @@ export default {
   methods: {
     onFileChange(e) {
       const file = e.target.files[0];
-      if (file && file.type === "application/pdf") {
+      if (file && file.type === 'application/pdf') {
         const reader = new FileReader();
         reader.onloadend = () => {
           this.input.kbis = reader.result;
         };
         reader.readAsDataURL(file);
       } else {
-        alert("Veuillez télécharger un fichier PDF.");
+        alert('Veuillez télécharger un fichier PDF.');
         this.input.kbis = '';
       }
     },

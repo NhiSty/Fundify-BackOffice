@@ -11,7 +11,7 @@ const store = useStore();
 
 const router = useRouter();
 
-const id = computed(() => store.state.id);
+const userId = computed(() => store.state.id);
 const isAdmin = computed(() => store.state.isAdmin);
 const isApproved = computed(() => store.state.isApproved);
 const merchantId = computed(() => store.state.id);
@@ -78,7 +78,7 @@ onMounted(async () => {
     await getAllTransactions();
   } else if (isApproved.value) {
     await getTransactions(merchantId.value);
-  } else if (id.value === null) {
+  } else if (userId.value === null) {
     router.push('/login');
   }
 });
