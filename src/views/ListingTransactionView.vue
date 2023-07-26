@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import MerchantWaiting from '../components/MerchantWaiting.vue';
 
-const allTransactions = ref([]);
 const transactions = ref([]);
 
 const store = useStore();
@@ -15,6 +14,8 @@ const userId = computed(() => store.state.id);
 const isAdmin = computed(() => store.state.isAdmin);
 const isApproved = computed(() => store.state.isApproved);
 const merchantId = computed(() => store.state.id);
+
+const searchInput = ref('');
 
 // Function to fetch merchants
 const getAllTransactions = async () => {
@@ -28,9 +29,8 @@ const getAllTransactions = async () => {
 
   if (response.ok) {
     const data = await response.json();
-    console.log(data);
 
-    allTransactions.value = data;
+    transactions.value = data;
   } else if (response.status === 401) {
     console.error('You are not authorized.');
     router.push('/login');
@@ -49,7 +49,6 @@ const getTransactions = async (id) => {
   });
   if (response.ok) {
     const data = await response.json();
-    console.log(data);
     transactions.value = data;
   } else {
     console.error('An error occurred.');
@@ -66,11 +65,23 @@ const deleteTransaction = async (id) => {
     });
 
     if (response.ok) {
-      getAllTransactions();
+      await getAllTransactions();
     } else {
       console.log('An error occurred while deleting the transaction.');
     }
   }
+};
+
+const searchFilter = () => {
+  const searchInputValue = searchInput.value.toLowerCase().trim();
+
+  return transactions.value.filter((transaction) => {
+    const findedAmount = transaction.amount.toLowerCase().includes(searchInputValue);
+    const findedStatus = transaction.status.toLowerCase().includes(searchInputValue);
+    const findedCurrency = transaction.currency.toLowerCase().includes(searchInputValue);
+
+    return findedAmount || findedStatus || findedCurrency;
+  });
 };
 
 onMounted(async () => {
@@ -87,8 +98,14 @@ onMounted(async () => {
 <template>
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg" v-if="isAdmin || isApproved">
     <h2 class="my-2 text-2xl">Liste des transactions</h2>
+    <div class="my-2">
+      <label class="block text-sm font-medium text-gray-700">Rechercher par amount - status - currency</label>
+      <div class="flex space-x-2">
+        <input v-model="searchInput" type="text" placeholder="Rechercher" class="px-2 py-1 border rounded">
+      </div>
+    </div>
     <div v-if="isAdmin">
-      <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400" v-if="allTransactions.length > 0">
+      <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400" v-if="searchFilter().length > 0">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
           <th scope="col" class="px-6 py-3">Amount</th>
@@ -100,7 +117,7 @@ onMounted(async () => {
         </tr>
         </thead>
         <tbody>
-        <tr v-for="transaction in allTransactions" v-bind:key="transaction" class="bg-white border-b dark:bg-gray-800
+        <tr v-for="transaction in searchFilter()" v-bind:key="transaction" class="bg-white border-b dark:bg-gray-800
             dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
           <td class="px-6 py-4">{{ transaction.amount }}</td>
           <td class="px-6 py-4">{{ transaction.status }}</td>
@@ -117,11 +134,11 @@ onMounted(async () => {
         </tbody>
       </table>
       <div v-else>
-        <p>Vous n'avez aucune transaction.</p>
+        <p>Vous n'avez aucune transaction / Essayez un autre filtre </p>
       </div>
     </div>
     <div v-else-if="isApproved">
-      <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400" v-if="transactions.length > 0">
+      <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400" v-if="searchFilter().length > 0">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
           <th scope="col" class="px-6 py-3">Amount</th>
@@ -133,7 +150,7 @@ onMounted(async () => {
         </tr>
         </thead>
         <tbody>
-        <tr v-for="transaction in transactions" v-bind:key="transaction" class="bg-white border-b dark:bg-gray-800
+        <tr v-for="transaction in searchFilter()" v-bind:key="transaction" class="bg-white border-b dark:bg-gray-800
             dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
           <td class="px-6 py-4">{{ transaction.amount }}</td>
           <td class="px-6 py-4">{{ transaction.status }}</td>
@@ -149,7 +166,7 @@ onMounted(async () => {
         </tbody>
       </table>
       <div v-else>
-        <p>Vous n'avez aucune transaction.</p>
+        <p>Vous n'avez aucune transaction / Changez votre filtre</p>
       </div>
     </div>
   </div>
