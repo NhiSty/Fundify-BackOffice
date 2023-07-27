@@ -14,7 +14,15 @@ const router = useRouter();
 const userId = computed(() => store.state.id);
 const isAdmin = computed(() => store.state.isAdmin);
 const isApproved = computed(() => store.state.isApproved);
-const merchantId = computed(() => store.state.id);
+let merchantId = computed(() => {
+  if (store.getters.getSelectedMerchant) {
+    console.log("Test1");
+    return store.getters.getSelectedMerchant;
+  } else {
+    console.log("Test2");
+    return store.state.id;
+  }
+});
 
 // Function to fetch merchants
 const getAllTransactions = async () => {
@@ -74,9 +82,9 @@ const deleteTransaction = async (id) => {
 };
 
 onMounted(async () => {
-  if (isAdmin.value) {
+  if (isAdmin.value && store.getters.getSelectedMerchant === null) {
     await getAllTransactions();
-  } else if (isApproved.value) {
+  } else if (isApproved.value || store.getters.getSelectedMerchant) {
     await getTransactions(merchantId.value);
   } else if (userId.value === null) {
     router.push('/login');
@@ -87,7 +95,7 @@ onMounted(async () => {
 <template>
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg" v-if="isAdmin || isApproved">
     <h2 class="my-2 text-2xl">Liste des transactions</h2>
-    <div v-if="isAdmin">
+    <div v-if="isAdmin && !store.getters.getSelectedMerchant">
       <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400" v-if="allTransactions.length > 0">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
@@ -120,7 +128,7 @@ onMounted(async () => {
         <p>Vous n'avez aucune transaction.</p>
       </div>
     </div>
-    <div v-else-if="isApproved">
+    <div v-else-if="isApproved || merchantId">
       <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400" v-if="transactions.length > 0">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
