@@ -1,54 +1,56 @@
 <template>
-  <div class="flex flex-col items-center mb-4" v-if="isApproved || store.state.selectedMerchant !== null">
-    <div class="mb-6">
-      <h1 class="text-3xl font-semibold">Tableau de bord</h1>
-    </div>
-    <div class="w-full mb-6">
-      <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Argent généré par jour</h3>
-        <div class="p-3">
-          <canvas ref="revenueChart"></canvas>
+  <div>
+    <div class="flex flex-col items-center mb-4" v-if="isApproved || store.state.selectedMerchant !== null">
+      <div class="mb-6">
+        <h1 class="text-3xl font-semibold">Tableau de bord</h1>
+      </div>
+      <div class="w-full mb-6">
+        <div class="border border-gray-300 shadow">
+          <h3 class="text-xl p-3">Argent généré par jour</h3>
+          <div class="p-3">
+            <canvas ref="revenueChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="w-full md:w-1/2">
+        <div class="border border-gray-300 shadow">
+          <h3 class="text-xl p-3">Transactions réussies</h3>
+          <div class="p-3">
+            <canvas ref="successfullTransactionsChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
-    <div class="w-full md:w-1/2">
-      <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Transactions réussies</h3>
-        <div class="p-3">
-          <canvas ref="successfullTransactionsChart"></canvas>
+    <div class="flex flex-col items-center mb-4" v-if="isAdmin && store.state.selectedMerchant === null">
+      <div class="mb-6">
+        <h1 class="text-3xl font-semibold">Tableau de bord</h1>
+      </div>
+      <div class="w-full mb-6">
+        <div class="border border-gray-300 shadow">
+          <h3 class="text-xl p-3">Nombre de marchands: {{ merchantCount }}</h3>
+          <div class="p-3">
+            <canvas ref="merchantChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-around w-full mb-6">
+        <div class="border border-gray-300 shadow">
+          <h3 class="text-xl p-3">Transactions réussies</h3>
+          <div class="p-3">
+            <canvas ref="merchantValidationsChart"></canvas>
+          </div>
+        </div>
+        <div class="border border-gray-300 shadow">
+          <h3 class="text-xl p-3">Transactions échouées</h3>
+          <div class="p-3">
+            <canvas ref="transactionStatusChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="flex flex-col items-center mb-4" v-if="isAdmin && store.state.selectedMerchant === null">
-    <div class="mb-6">
-      <h1 class="text-3xl font-semibold">Tableau de bord</h1>
+    <div class="flex flex-col items-center mb-4" v-else-if="isMerchant">
+      <MerchantWaiting />
     </div>
-    <div class="w-full mb-6">
-      <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Nombre de marchands: {{ merchantCount }}</h3>
-        <div class="p-3">
-          <canvas ref="merchantChart"></canvas>
-        </div>
-      </div>
-    </div>
-    <div class="flex justify-around w-full mb-6">
-      <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Transactions réussies</h3>
-        <div class="p-3">
-          <canvas ref="merchantValidationsChart"></canvas>
-        </div>
-      </div>
-      <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Transactions échouées</h3>
-        <div class="p-3">
-          <canvas ref="transactionStatusChart"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="flex flex-col items-center mb-4" v-else-if="isMerchant">
-    <MerchantWaiting />
   </div>
 </template>
 
