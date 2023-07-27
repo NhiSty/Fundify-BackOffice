@@ -48,7 +48,6 @@ const store = createStore({
       const token = document.cookie.split(';').find((cookie) => cookie.trim().startsWith('token='));
       if (token) {
         const decoded = jwtDecode(token.split('=')[1]);
-        console.log(decoded);
         commit('setAuthData', {
           id: decoded.id,
           isLoggedIn: true,

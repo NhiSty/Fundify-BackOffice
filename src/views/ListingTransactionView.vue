@@ -5,9 +5,7 @@ import { useStore } from 'vuex';
 import MerchantWaiting from '../components/MerchantWaiting.vue';
 
 const transactions = ref([]);
-
 const store = useStore();
-
 const router = useRouter();
 
 const userId = computed(() => store.state.id);
@@ -60,33 +58,21 @@ const getTransactions = async (id) => {
   }
 };
 
-const deleteTransaction = async (id) => {
-  const confirm = window.confirm('Ça dégage ?');
-
-  if (confirm) {
-    const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/transaction/${id}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    });
-
-    if (response.ok) {
-      await getAllTransactions();
-    } else {
-      console.log('An error occurred while deleting the transaction.');
-    }
-  }
+const detailTransaction = async (id) => {
+  console.log(id);
 };
 
 const searchFilter = () => {
   const searchInputValue = searchInput.value.toLowerCase().trim();
 
-  return transactions.value.filter((transaction) => {
-    const findedAmount = transaction.amount.toLowerCase().includes(searchInputValue);
+  const toto = transactions.value.filter((transaction) => {
+    const findedAmount = transaction.amount.toString().includes(searchInputValue);
     const findedStatus = transaction.status.toLowerCase().includes(searchInputValue);
     const findedCurrency = transaction.currency.toLowerCase().includes(searchInputValue);
 
     return findedAmount || findedStatus || findedCurrency;
   });
+  return toto;
 };
 
 onMounted(async () => {
@@ -130,9 +116,9 @@ onMounted(async () => {
           <td class="px-6 py-4">{{ transaction.merchantId }}</td>
           <td class="px-6 py-4">{{ transaction.userId }}</td>
           <td class="px-6 py-4">
-            <button class="px-4 py-2 font-semibold text-white bg-red-500 rounded hover:bg-red-700"
-                    @click="deleteTransaction(transaction.id)">
-              Supprimer
+            <button class="px-4 py-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700"
+                    @click="detailTransaction(transaction.id)">
+              Voir détails
             </button>
           </td>
         </tr>
@@ -162,9 +148,9 @@ onMounted(async () => {
           <td class="px-6 py-4">{{ transaction.currency }}</td>
           <td class="px-6 py-4">{{ transaction.userId }}</td>
           <td class="px-6 py-4">
-            <button class="px-4 py-2 font-semibold text-white bg-red-500 rounded hover:bg-red-700"
-                    @click="deleteTransaction(transaction.id)">
-              Supprimer
+            <button class="px-4 py-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700"
+                    @click="detailTransaction(transaction.id)">
+              Voir détails
             </button>
           </td>
         </tr>

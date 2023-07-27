@@ -48,7 +48,7 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col items-center mb-4" v-else-if="isMerchant">
+    <div class="flex flex-col items-center mb-4" v-else-if="!isApproved">
       <MerchantWaiting />
     </div>
   </div>
@@ -66,7 +66,7 @@ import MerchantWaiting from '../components/MerchantWaiting.vue';
 const router = useRouter();
 const store = useStore();
 const isAdmin = computed(() => store.state.isAdmin);
-const isMerchant = computed(() => store.state.isMerchant);
+const isLogged = computed(() => store.state.isLoggedIn);
 const isApproved = computed(() => store.state.isApproved);
 const merchantId = computed(() => {
   if (store.getters.getSelectedMerchant) {
@@ -116,7 +116,7 @@ function processDailyTotals(infos) {
 }
 
 onMounted(async () => {
-  if (merchantId.value === null) {
+  if (!isLogged.value) {
     router.push('/login');
   } else if (isApproved.value || store.state.selectedMerchant !== null) {
     const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${merchantId.value}/transactions`, {
