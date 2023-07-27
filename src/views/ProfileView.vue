@@ -10,7 +10,7 @@ let id;
 if (selectedMerchant !== null) {
   id = computed(() => selectedMerchant);
 } else {
-  id = computed(() => store.state.id);
+  id = computed(() => store.state.merchantId);
 }
 const isMerchant = computed(() => store.state.isMerchant);
 
@@ -28,34 +28,25 @@ const clientToken = ref(infos.clientToken);
 const clientSecret = ref(infos.clientSecret);
 
 async function generateNewCredentials() {
-  const passToFalse = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id}`, {
-    method: 'PATCH',
+  fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}/credentials`, {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ approved: false }),
     credentials: 'include',
-  });
-
-  if (passToFalse.ok) {
-    const passToTrue = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ approved: true }),
-      credentials: 'include',
+  }).then((response) => response.json())
+    .then((data) => {
+      clientToken.value = data.clientToken;
+      clientSecret.value = data.clientSecret;
+    })
+    .catch((error) => {
+      console.error('Error:', error);
     });
-    clientToken.value = passToTrue.clientToken;
-    clientSecret.value = passToTrue.clientSecret;
-  } else {
-    console.log('An error occurred while approving the merchant.');
-  }
 }
 
 </script>
 <template>
-  <div v-if="!isMerchant"> >
+  <div v-if="!isMerchant">
     <p class="text-lg font-semibold text-red-500 mb-4">Fait pas le malin, tu n'es pas encore approuvé !</p>
   </div>
   <div v-else class="flex flex-row-screen justify-center items-center">

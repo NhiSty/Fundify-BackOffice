@@ -68,13 +68,12 @@ const store = useStore();
 const isAdmin = computed(() => store.state.isAdmin);
 const isMerchant = computed(() => store.state.isMerchant);
 const isApproved = computed(() => store.state.isApproved);
-let id;
-
-if (store.getters.getSelectedMerchant !== null) {
-  id = computed(() => store.getters.getSelectedMerchant);
-} else {
-  id = computed(() => store.state.id);
-}
+const merchantId = computed(() => {
+  if (store.getters.getSelectedMerchant) {
+    return store.getters.getSelectedMerchant;
+  }
+  return store.state.merchantId;
+});
 
 Chart.register(BarController, CategoryScale, LinearScale, DoughnutController, ArcElement, BarElement, LineElement, Title, Tooltip, Legend);
 
@@ -117,10 +116,10 @@ function processDailyTotals(infos) {
 }
 
 onMounted(async () => {
-  if (id.value === null) {
+  if (merchantId.value === null) {
     router.push('/login');
   } else if (isApproved.value || store.state.selectedMerchant !== null) {
-    const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}/transactions`, {
+    const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${merchantId.value}/transactions`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -129,8 +128,6 @@ onMounted(async () => {
     });
 
     const infos = await request.json();
-
-    console.log('infos', infos);
 
     const successCount = infos.filter((info) => info.status === 'CONFIRMED').length;
     const pendingCount = infos.filter((info) => info.status === 'PENDING').length;
@@ -180,7 +177,6 @@ onMounted(async () => {
     });
 
     const infos = await response.json();
-
 
     if (Array.isArray(infos.merchants)) {
       merchantCount.value = infos.merchants.length;
