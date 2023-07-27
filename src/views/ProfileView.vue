@@ -14,7 +14,7 @@ if (selectedMerchant !== null) {
 }
 const isMerchant = computed(() => store.state.isMerchant);
 
-const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/${id.value}/account`, {
+const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}`, {
   method: 'GET',
   headers: {
     'Content-Type': 'application/json',
@@ -28,25 +28,37 @@ const clientToken = ref(infos.clientToken);
 const clientSecret = ref(infos.clientSecret);
 
 async function generateNewCredentials() {
-  const requestCredentials = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/account/update`, {
-    method: 'PUT',
+  const passToFalse = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id}`, {
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      merchantId: id.value,
-    }),
+    body: JSON.stringify({ approved: false }),
     credentials: 'include',
   });
 
-  const response = await requestCredentials.json();
-  clientToken.value = response.clientToken;
-  clientSecret.value = response.clientSecret;
+  if (passToFalse.ok) {
+    const passToTrue = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ approved: true }),
+      credentials: 'include',
+    });
+    clientToken.value = passToTrue.clientToken;
+    clientSecret.value = passToTrue.clientSecret;
+  } else {
+    console.log('An error occurred while approving the merchant.');
+  }
 }
 
 </script>
 <template>
-  <div class="flex flex-row-screen justify-center items-center">
+  <div v-if="!isMerchant"> >
+    <p class="text-lg font-semibold text-red-500 mb-4">Fait pas le malin, tu n'es pas encore approuvé !</p>
+  </div>
+  <div v-else class="flex flex-row-screen justify-center items-center">
     <div class="flex flex-col items-center py-10">
       <img
           class="w-24 h-24 mb-3 rounded-full shadow-lg"
@@ -56,7 +68,6 @@ async function generateNewCredentials() {
       <h2 class="mb-1 text-xl font-medium text-gray-900">
         {{ infos.contactFirstName }} {{ infos.contactLastName }}
       </h2>
-      <p class="text-lg font-semibold text-red-500 mb-4" v-if="isMerchant">Fait pas le malin, tu n'es pas encore approuvé !</p>
       <span class="text-sm text-gray-500 dark:text-gray-400">Marchand</span>
         <dd class="text-lg font-semibold"> Compagny name : {{ infos.companyName }}</dd>
         <dd class="text-lg font-semibold"> email : {{ infos.contactEmail }}</dd>

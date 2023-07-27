@@ -61,7 +61,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-let input = reactive({
+const input = reactive({
   lastname: '',
   firstname: '',
   email: '',
@@ -69,7 +69,7 @@ let input = reactive({
   confirmPassword: '',
 });
 
-let output = ref('');
+const output = ref('');
 
 const register = async () => {
   // Make sure all fields are filled
@@ -86,7 +86,7 @@ const register = async () => {
   }
 
   // Envoyer une requête POST à votre serveur pour inscrire l'utilisateur
-  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/signup`, {
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -96,7 +96,6 @@ const register = async () => {
 
   if (response.ok) {
     output.value = 'Inscription réussie !';
-    router.push('/login');
   } else if (response.status === 409) {
     output.value = 'Cet email est déjà utilisé';
   } else {
