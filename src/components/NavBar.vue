@@ -1,14 +1,22 @@
 <!-- eslint-disable max-len -->
 <script setup>
-import { computed } from 'vue';
+import { computedg } from 'vue';
 import { useStore } from 'vuex';
 
 const store = useStore();
 
+const selectedMerchant = computed(() => store.getters.getSelectedMerchant);
 const isLoggedIn = computed(() => store.getters.getAuthData.isLoggedIn);
 const isAdmin = computed(() => store.getters.getAuthData.isAdmin);
 const isMerchant = computed(() => store.getters.getAuthData.isMerchant);
-const isApproved = computed(() => store.getters.getAuthData.isApproved);
+let isApproved
+
+if (selectedMerchant !== null) {
+  isApproved = computed(() => store.getters.getSelectedMerchant);
+} else {
+  isApproved = computed(() => store.getters.getAuthData.isApproved);
+}
+
 const logout = async () => {
   await store.dispatch('logout');
 };
@@ -59,7 +67,8 @@ const logout = async () => {
             <li v-if="isAdmin">
               <router-link to="/admin"
                 class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-                >Admin</router-link
+                >Admin<span v-if="selectedMerchant !== null"> ({{ selectedMerchant }})</span>
+                </router-link
               >
             </li>
             <li v-if="isAdmin || isApproved">
@@ -80,7 +89,7 @@ const logout = async () => {
                 >Connexion</router-link
               >
             </li>
-            <li v-if="isApproved">
+            <li v-if="isApproved || isAdmin">
               <router-link to="/dashboard"
                            class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
               >Dashboard</router-link
