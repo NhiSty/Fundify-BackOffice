@@ -4,13 +4,13 @@
   <form name="login-form" class="max-w-sm mx-auto">
     <h2 class="my-2 text-2xl">Halte ! Qui va là ?</h2>
     <div class="mb-4">
-      <label for="contactEmail" class="block text-sm font-medium text-gray-700"
+      <label for="email" class="block text-sm font-medium text-gray-700"
         >Email:</label
       >
       <input
-        type="contactEmail"
-        id="contactEmail"
-        v-model="input.contactEmail"
+        type="email"
+        id="email"
+        v-model="input.email"
         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
       />
     </div>
@@ -51,23 +51,23 @@ import { useStore } from 'vuex';
 const router = useRouter();
 const store = useStore();
 
-let input = reactive({
-  contactEmail: '',
+const input = reactive({
+  email: '',
   password: '',
 });
 
-let output = ref('');
+const output = ref('');
 
 const login = async () => {
   // Make sure all fields are filled
-  if (!input.contactEmail || !input.password) {
+  if (!input.email || !input.password) {
     output.value = 'Veuillez remplir tous les champs';
     console.log(input);
     return;
   }
 
   // Send a POST request to your server to login the user
-  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/merchant/login`, {
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/users/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

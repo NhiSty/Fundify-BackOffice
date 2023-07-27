@@ -46,12 +46,12 @@ import { useStore } from 'vuex';
 const router = useRouter();
 const store = useStore();
 
-let input = reactive({
+const input = reactive({
   email: '',
   password: '',
 });
 
-let output = ref('');
+const output = ref('');
 
 const login = async () => {
   // Make sure all fields are filled
@@ -62,7 +62,7 @@ const login = async () => {
   }
 
   // Send a POST request to your server to login the user
-  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, {
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/users/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

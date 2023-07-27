@@ -60,7 +60,7 @@ async function register() {
   const base64File = await createBase64File(registerFormData.kbis);
   const { kbis, ...restInput } = registerFormData;
 
-  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/create`, {
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

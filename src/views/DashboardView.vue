@@ -120,7 +120,7 @@ onMounted(async () => {
   if (id.value === null) {
     router.push('/login');
   } else if (isApproved.value || store.state.selectedMerchant !== null) {
-    const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/${id.value}/transactions`, {
+    const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}/transactions`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -129,6 +129,8 @@ onMounted(async () => {
     });
 
     const infos = await request.json();
+
+    console.log('infos', infos);
 
     const successCount = infos.filter((info) => info.status === 'CONFIRMED').length;
     const pendingCount = infos.filter((info) => info.status === 'PENDING').length;
@@ -169,7 +171,7 @@ onMounted(async () => {
       });
     }
   } else if (isAdmin.value && store.state.selectedMerchant === null) {
-    const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/admin/merchants`, {
+    const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -178,6 +180,7 @@ onMounted(async () => {
     });
 
     const infos = await response.json();
+
 
     if (Array.isArray(infos.merchants)) {
       merchantCount.value = infos.merchants.length;

@@ -66,7 +66,7 @@ const store = createStore({
       commit('setSelectedMerchant', merchantId);
     },
     async logout({ commit }) {
-      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/logout`, {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/users/logout`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -80,6 +80,7 @@ const store = createStore({
         localStorage.removeItem('selectedMerchant');
         window.location.href = '/';
       } else {
+        console.log(response);
         console.log('Une erreur est survenue');
       }
     },

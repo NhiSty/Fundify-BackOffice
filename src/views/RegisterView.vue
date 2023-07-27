@@ -31,7 +31,7 @@ const register = async () => {
   }
 
   // Envoyer une requête POST à votre serveur pour inscrire l'utilisateur
-  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/signup`, {
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

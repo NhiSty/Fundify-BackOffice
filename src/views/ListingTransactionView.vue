@@ -24,7 +24,7 @@ const searchInput = ref('');
 
 // Function to fetch merchants
 const getAllTransactions = async () => {
-  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/admin/transactions`, {
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/transactions`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ const getAllTransactions = async () => {
 };
 
 const getTransactions = async (id) => {
-  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/transactions/merchant/${id}`, {
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id}/transactions`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
