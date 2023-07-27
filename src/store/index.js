@@ -10,6 +10,7 @@ const store = createStore({
       isMerchant: false,
       isApproved: false,
       isAdmin: false,
+      selectedMerchant: localStorage.getItem('selectedMerchant') ? Number(localStorage.getItem('selectedMerchant')) : null,
     };
   },
   getters: {
@@ -22,6 +23,9 @@ const store = createStore({
         isAdmin: state.isAdmin,
       };
     },
+    getSelectedMerchant(state) {
+      return state.selectedMerchant;
+    }
   },
   mutations: {
     setAuthData(state, payload) {
@@ -30,6 +34,10 @@ const store = createStore({
       state.isMerchant = payload.isMerchant;
       state.isApproved = payload.isApproved;
       state.isAdmin = payload.isAdmin;
+    },
+    setSelectedMerchant(state, payload) {
+      state.selectedMerchant = payload;
+      localStorage.setItem('selectedMerchant', payload);
     },
   },
   actions: {
@@ -54,6 +62,9 @@ const store = createStore({
         });
       }
     },
+    selectedMerchant({ commit }, merchantId) {
+      commit('setSelectedMerchant', merchantId);
+    },
     async logout({ commit }) {
       const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/logout`, {
         method: 'GET',
@@ -66,7 +77,7 @@ const store = createStore({
           isApproved: false,
           isAdmin: false,
         });
-        console.log(`Navbar is ${this.state.isLoggedIn}`);
+        localStorage.removeItem('selectedMerchant');
         window.location.href = '/';
       } else {
         console.log('Une erreur est survenue');

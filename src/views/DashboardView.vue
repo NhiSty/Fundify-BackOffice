@@ -1,54 +1,56 @@
 <template>
-  <div class="flex flex-col items-center mb-4" v-if="isApproved">
-    <div class="mb-6">
-      <h1 class="text-3xl font-semibold">Tableau de bord</h1>
-    </div>
-    <div class="w-full mb-6">
-      <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Argent généré par jour</h3>
-        <div class="p-3">
-          <canvas ref="revenueChart"></canvas>
+  <div>
+    <div class="flex flex-col items-center mb-4" v-if="isApproved || store.state.selectedMerchant !== null">
+      <div class="mb-6">
+        <h1 class="text-3xl font-semibold">Tableau de bord</h1>
+      </div>
+      <div class="w-full mb-6">
+        <div class="border border-gray-300 shadow">
+          <h3 class="text-xl p-3">Argent généré par jour</h3>
+          <div class="p-3">
+            <canvas ref="revenueChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="w-full md:w-1/2">
+        <div class="border border-gray-300 shadow">
+          <h3 class="text-xl p-3">Transactions réussies</h3>
+          <div class="p-3">
+            <canvas ref="successfullTransactionsChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
-    <div class="w-full md:w-1/2">
-      <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Transactions réussies</h3>
-        <div class="p-3">
-          <canvas ref="successfullTransactionsChart"></canvas>
+    <div class="flex flex-col items-center mb-4" v-if="isAdmin && store.state.selectedMerchant === null">
+      <div class="mb-6">
+        <h1 class="text-3xl font-semibold">Tableau de bord</h1>
+      </div>
+      <div class="w-full mb-6">
+        <div class="border border-gray-300 shadow">
+          <h3 class="text-xl p-3">Nombre de marchands: {{ merchantCount }}</h3>
+          <div class="p-3">
+            <canvas ref="merchantChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-around w-full mb-6">
+        <div class="border border-gray-300 shadow">
+          <h3 class="text-xl p-3">Transactions réussies</h3>
+          <div class="p-3">
+            <canvas ref="merchantValidationsChart"></canvas>
+          </div>
+        </div>
+        <div class="border border-gray-300 shadow">
+          <h3 class="text-xl p-3">Transactions échouées</h3>
+          <div class="p-3">
+            <canvas ref="transactionStatusChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="flex flex-col items-center mb-4" v-if="isAdmin">
-    <div class="mb-6">
-      <h1 class="text-3xl font-semibold">Tableau de bord</h1>
+    <div class="flex flex-col items-center mb-4" v-else-if="isMerchant">
+      <MerchantWaiting />
     </div>
-    <div class="w-full mb-6">
-      <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Nombre de marchands: {{ merchantCount }}</h3>
-        <div class="p-3">
-          <canvas ref="merchantChart"></canvas>
-        </div>
-      </div>
-    </div>
-    <div class="flex justify-around w-full mb-6">
-      <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Transactions réussies</h3>
-        <div class="p-3">
-          <canvas ref="merchantValidationsChart"></canvas>
-        </div>
-      </div>
-      <div class="border border-gray-300 shadow">
-        <h3 class="text-xl p-3">Transactions échouées</h3>
-        <div class="p-3">
-          <canvas ref="transactionStatusChart"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="flex flex-col items-center mb-4" v-else-if="isMerchant">
-    <MerchantWaiting />
   </div>
 </template>
 
@@ -63,10 +65,16 @@ import MerchantWaiting from '../components/MerchantWaiting.vue';
 
 const router = useRouter();
 const store = useStore();
-const id = computed(() => store.state.id);
 const isAdmin = computed(() => store.state.isAdmin);
-const isApproved = computed(() => store.state.isApproved);
 const isMerchant = computed(() => store.state.isMerchant);
+const isApproved = computed(() => store.state.isApproved);
+let id;
+
+if (store.getters.getSelectedMerchant !== null) {
+  id = computed(() => store.getters.getSelectedMerchant);
+} else {
+  id = computed(() => store.state.id);
+}
 
 Chart.register(BarController, CategoryScale, LinearScale, DoughnutController, ArcElement, BarElement, LineElement, Title, Tooltip, Legend);
 
@@ -111,7 +119,7 @@ function processDailyTotals(infos) {
 onMounted(async () => {
   if (id.value === null) {
     router.push('/login');
-  } else if (isApproved.value) {
+  } else if (isApproved.value || store.state.selectedMerchant !== null) {
     const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/${id.value}/transactions`, {
       method: 'GET',
       headers: {
@@ -159,7 +167,7 @@ onMounted(async () => {
         options: chartOptions,
       });
     }
-  } else if (isAdmin.value) {
+  } else if (isAdmin.value && store.state.selectedMerchant === null) {
     const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/admin/merchants`, {
       method: 'GET',
       headers: {

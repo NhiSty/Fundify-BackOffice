@@ -1,13 +1,16 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import AddAdmin from '../components/AddAdmin.vue';
+import { useStore } from 'vuex';
 
 const merchants = ref([]);
 const users = ref([]);
 
 const router = useRouter();
+const store = useStore();
 
+const selectedMerchant = computed(() => store.state.selectedMerchant);
 // Function to fetch users
 const getUsers = async () => {
   const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/admin/users`, {
@@ -20,7 +23,6 @@ const getUsers = async () => {
 
   if (response.ok) {
     const data = await response.json();
-    console.log(data);
     users.value = data;
   } else if (response.status === 401) {
     console.error('You are not authorized.');
@@ -138,6 +140,16 @@ const tabs = [
 
 const activeTab = ref(tabs[0].title);
 
+const selectMerchant = (id) => {
+  store.commit('setSelectedMerchant', id);
+  router.push('/profile');
+};
+
+const unselectMerchant = () => {
+  store.commit('setSelectedMerchant', null);
+  localStorage.removeItem('selectedMerchant');
+};
+
 onMounted(async () => {
   await getMerchants();
   await getUsers();
@@ -168,6 +180,7 @@ onMounted(async () => {
             <th scope="col" class="px-6 py-3">Email</th>
             <th scope="col" class="px-6 py-3">Status</th>
             <th scope="col" class="px-6 py-3">Action</th>
+            <th scope="col" class="px-6 py-3">Se faire passer pour</th>
           </tr>
         </thead>
         <tbody>
@@ -195,6 +208,18 @@ onMounted(async () => {
               <button class="px-4 py-2 font-semibold text-white bg-red-500 rounded hover:bg-red-700"
                 @click="invalidate(merchant.id)">
                 Refuser
+              </button>
+            </td>
+            <td class="px-6 py-4" v-if="selectedMerchant === merchant.id">
+              <button class="px-4 py-2 font-semibold text-white bg-red-500 rounded hover:bg-red-700"
+                @click="unselectMerchant()">
+                Désélectionner
+              </button>
+            </td>
+            <td class="px-6 py-4" v-else>
+              <button class="px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-700"
+                @click="selectMerchant(merchant.id)">
+                Sélectionner
               </button>
             </td>
           </tr>
