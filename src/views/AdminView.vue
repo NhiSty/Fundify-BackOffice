@@ -13,7 +13,7 @@ const store = useStore();
 const selectedMerchant = computed(() => store.state.selectedMerchant);
 // Function to fetch users
 const getUsers = async () => {
-  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants`, {
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/users`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ const setAdmin = async (id) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ id }),
+    body: JSON.stringify({ userId: id }),
     credentials: 'include',
   });
 
@@ -111,7 +111,7 @@ const setAdmin = async (id) => {
 
 const tabs = [
   { title: 'Merchants', class: 'inline-block p-4 rounded-t-lg' },
-  { title: 'Users', class: 'inline-block p-4 rounded-t-lg' },
+  { title: 'Admin', class: 'inline-block p-4 rounded-t-lg' },
 ];
 
 const activeTab = ref(tabs[0].title);
@@ -207,6 +207,7 @@ onMounted(async () => {
     </div>
 
     <div v-else>
+      <AddAdmin />
       <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400" v-if="users.length > 0">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
@@ -247,7 +248,6 @@ onMounted(async () => {
         <p>Tu ferais mieux d'aller élever des chèvres dans le Larzac.</p>
         <p>Et même ça, c'est pas sûr que tu y arrives...</p>
       </div>
-      <AddAdmin />
     </div>
   </div>
 </template>
