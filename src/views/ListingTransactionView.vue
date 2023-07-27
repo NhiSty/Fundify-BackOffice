@@ -17,7 +17,7 @@ const merchantId = computed(() => {
   if (store.getters.getSelectedMerchant) {
     return store.getters.getSelectedMerchant;
   }
-  return store.state.id;
+  return store.state.merchantId;
 });
 
 const searchInput = ref('');
