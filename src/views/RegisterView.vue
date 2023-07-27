@@ -1,5 +1,55 @@
 <!-- eslint-disable vue/no-multiple-template-root -->
 <!-- eslint-disable max-len -->
+<script setup>
+import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+let input = reactive({
+  lastname: '',
+  firstname: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+});
+
+let output = ref('');
+
+const register = async () => {
+  // Make sure all fields are filled
+  if (!input.lastname || !input.firstname || !input.email || !input.password || !input.confirmPassword) {
+    output.value = 'Veuillez remplir tous les champs';
+    console.log(input);
+    return;
+  }
+
+  if (input.password !== input.confirmPassword) {
+    output.value = 'Les mots de passe ne correspondent pas';
+    console.log(input);
+    return;
+  }
+
+  // Envoyer une requête POST à votre serveur pour inscrire l'utilisateur
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/signup`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (response.ok) {
+    output.value = 'Inscription réussie !';
+    router.push('/login');
+  } else if (response.status === 409) {
+    output.value = 'Cet email est déjà utilisé';
+  } else {
+    output.value = 'Une erreur est survenue';
+  }
+};
+</script>
+
 <template>
     <form name="login-form" class="max-w-sm mx-auto">
       <h2 class="my-2 text-2xl">Inscription</h2>
@@ -65,56 +115,4 @@
     <h3 class="text-lg text-center font-medium text-red-600 mt-8" v-if="this.output">
       {{ this.output }}
     </h3>
-  </template>
-
-<script>
-export default {
-  name: 'RegisterView',
-  data() {
-    return {
-      input: {
-        lastname: '',
-        firstname: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      },
-      output: '',
-    };
-  },
-  methods: {
-    async register() {
-      // Make sure all fields are filled
-      if (!this.input.lastname || !this.input.firstname || !this.input.email || !this.input.password || !this.input.confirmPassword) {
-        this.output = 'Veuillez remplir tous les champs';
-        console.log(this.input);
-        return;
-      }
-
-      if (this.input.password !== this.input.confirmPassword) {
-        this.output = 'Les mots de passe ne correspondent pas';
-        console.log(this.input);
-        return;
-      }
-
-      // Envoyer une requête POST à votre serveur pour inscrire l'utilisateur
-      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(this.input),
-      });
-
-      if (response.ok) {
-        this.output = 'Inscription réussie !';
-        this.$router.push('/login');
-      } else if (response.status === 409) {
-        this.output = 'Cet email est déjà utilisé';
-      } else {
-        this.output = 'Une erreur est survenue';
-      }
-    },
-  },
-};
-</script>
+</template>
