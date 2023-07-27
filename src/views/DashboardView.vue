@@ -35,13 +35,13 @@
       </div>
       <div class="flex justify-around w-full mb-6">
         <div class="border border-gray-300 shadow">
-          <h3 class="text-xl p-3">Transactions réussies</h3>
+          <h3 class="text-xl p-3">Marchands par statut</h3>
           <div class="p-3">
             <canvas ref="merchantValidationsChart"></canvas>
           </div>
         </div>
         <div class="border border-gray-300 shadow">
-          <h3 class="text-xl p-3">Transactions échouées</h3>
+          <h3 class="text-xl p-3">Transactions par statut</h3>
           <div class="p-3">
             <canvas ref="transactionStatusChart"></canvas>
           </div>
@@ -131,7 +131,8 @@ onMounted(async () => {
     const infos = await request.json();
 
     const successCount = infos.filter((info) => info.status === 'CONFIRMED').length;
-    const failureCount = infos.filter((info) => info.status === 'PENDING').length;
+    const pendingCount = infos.filter((info) => info.status === 'PENDING').length;
+    const failureCount = infos.filter((info) => info.status === 'CANCELLED').length;
 
     const { dates, totals } = processDailyTotals(infos);
     if (revenueChart.value && successfullTransactionsChart.value) {
@@ -155,12 +156,12 @@ onMounted(async () => {
       new Chart(successfullTransactionsChart.value, {
         type: 'doughnut',
         data: {
-          labels: ['Transactions réussies', 'Transactions en attente'],
+          labels: ['Transactions réussies', 'Transactions en attente', 'Transactions échouées'],
           datasets: [{
             label: 'Transactions',
-            data: [successCount, failureCount],
-            backgroundColor: ['#6366F1', '#F3F4F6'],
-            borderColor: ['#6366F1', '#F3F4F6'],
+            data: [successCount, pendingCount, failureCount],
+            backgroundColor: ['#6366F1', '#F3F4F6', '#F87171'],
+            borderColor: ['#6366F1', '#F3F4F6', '#F87171'],
             borderWidth: 1,
           }],
         },
@@ -185,6 +186,7 @@ onMounted(async () => {
     }
 
     const successCount = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
+    const pendingCount = Math.floor(Math.random() * (50 - 250 + 1)) + 250;
     const failureCount = Math.floor(Math.random() * (100 - 250 + 1)) + 250;
 
     if (merchantChart.value && merchantValidationsChart.value && transactionStatusChart.value) {
@@ -224,12 +226,12 @@ onMounted(async () => {
       new Chart(transactionStatusChart.value, {
         type: 'doughnut',
         data: {
-          labels: ['Transactions réussies', 'Transactions échoées'],
+          labels: ['Transactions réussies', 'Transactions en attente', 'Transactions échouées'],
           datasets: [{
             label: 'Transactions',
-            data: [successCount, failureCount],
-            backgroundColor: ['#6366F1', '#F3F4F6'],
-            borderColor: ['#6366F1', '#F3F4F6'],
+            data: [successCount, pendingCount, failureCount],
+            backgroundColor: ['#6366F1', '#F3F4F6', '#F87171'],
+            borderColor: ['#6366F1', '#F3F4F6', '#F87171'],
             borderWidth: 1,
           }],
         },
