@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center mb-4" v-if="isApproved">
+  <div class="flex flex-col items-center mb-4" v-if="isApproved || store.state.selectedMerchant !== null">
     <div class="mb-6">
       <h1 class="text-3xl font-semibold">Tableau de bord</h1>
     </div>
@@ -20,7 +20,7 @@
       </div>
     </div>
   </div>
-  <div class="flex flex-col items-center mb-4" v-if="isAdmin">
+  <div class="flex flex-col items-center mb-4" v-if="isAdmin && store.state.selectedMerchant === null">
     <div class="mb-6">
       <h1 class="text-3xl font-semibold">Tableau de bord</h1>
     </div>
@@ -63,10 +63,16 @@ import MerchantWaiting from '../components/MerchantWaiting.vue';
 
 const router = useRouter();
 const store = useStore();
-const id = computed(() => store.state.id);
 const isAdmin = computed(() => store.state.isAdmin);
-const isApproved = computed(() => store.state.isApproved);
 const isMerchant = computed(() => store.state.isMerchant);
+const isApproved = computed(() => store.state.isApproved);
+let id;
+
+if (store.getters.getSelectedMerchant !== null) {
+  id = computed(() => store.getters.getSelectedMerchant);
+} else {
+  id = computed(() => store.state.id);
+}
 
 Chart.register(BarController, CategoryScale, LinearScale, DoughnutController, ArcElement, BarElement, LineElement, Title, Tooltip, Legend);
 
@@ -111,7 +117,7 @@ function processDailyTotals(infos) {
 onMounted(async () => {
   if (id.value === null) {
     router.push('/login');
-  } else if (isApproved.value) {
+  } else if (isApproved.value || store.state.selectedMerchant !== null) {
     const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/${id.value}/transactions`, {
       method: 'GET',
       headers: {
@@ -159,7 +165,7 @@ onMounted(async () => {
         options: chartOptions,
       });
     }
-  } else if (isAdmin.value) {
+  } else if (isAdmin.value && store.state.selectedMerchant === null) {
     const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/admin/merchants`, {
       method: 'GET',
       headers: {

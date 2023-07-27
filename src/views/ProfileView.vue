@@ -4,7 +4,14 @@ import { ref, computed } from 'vue';
 
 const store = useStore();
 
-const id = computed(() => store.state.id);
+const selectedMerchant = localStorage.getItem('selectedMerchant');
+let id;
+
+if (selectedMerchant !== null) {
+  id = computed(() => selectedMerchant);
+} else {
+  id = computed(() => store.state.id);
+}
 const isMerchant = computed(() => store.state.isMerchant);
 
 const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchant/${id.value}/account`, {
