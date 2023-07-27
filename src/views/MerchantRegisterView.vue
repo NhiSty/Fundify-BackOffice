@@ -134,16 +134,21 @@ export default {
     onFileChange(e) {
       const file = e.target.files[0];
       if (file && file.type === 'application/pdf') {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          this.input.kbis = reader.result;
-        };
-        reader.readAsDataURL(file);
+        this.input.kbis = file;
       } else {
         alert('Veuillez télécharger un fichier PDF.');
         this.input.kbis = '';
       }
     },
+    createBase64File(fileObject) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(fileObject);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = (error) => reject(error);
+      });
+    },
+
     async register() {
       // Make sure all fields are filled
       if (!this.input.companyName || !this.input.kbis || !this.input.contactLastName || !this.input.contactFirstName || !this.input.contactEmail || !this.input.password || !this.input.contactPhone || !this.input.confirmationRedirectUrl || !this.input.cancellationRedirectUrl || !this.input.currency) {
@@ -152,13 +157,19 @@ export default {
         return;
       }
 
+      const base64File = await this.createBase64File(this.input.kbis);
+      const { kbis, ...restInput } = this.input;
+
       // Send a POST request to your server to login the user
       const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/merchant/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(this.input),
+        body: JSON.stringify({
+          kbis: base64File,
+          ...restInput,
+        }),
       });
 
       if (response.ok) {
