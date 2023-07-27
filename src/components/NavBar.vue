@@ -1,6 +1,6 @@
 <!-- eslint-disable max-len -->
 <script setup>
-import { computedg } from 'vue';
+import { computed } from 'vue';
 import { useStore } from 'vuex';
 
 const store = useStore();

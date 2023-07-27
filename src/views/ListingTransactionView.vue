@@ -13,7 +13,12 @@ const router = useRouter();
 const userId = computed(() => store.state.id);
 const isAdmin = computed(() => store.state.isAdmin);
 const isApproved = computed(() => store.state.isApproved);
-const merchantId = computed(() => store.state.id);
+const merchantId = computed(() => {
+  if (store.getters.getSelectedMerchant) {
+    return store.getters.getSelectedMerchant;
+  }
+  return store.state.id;
+});
 
 const searchInput = ref('');
 
@@ -85,9 +90,9 @@ const searchFilter = () => {
 };
 
 onMounted(async () => {
-  if (isAdmin.value) {
+  if (isAdmin.value && store.getters.getSelectedMerchant === null) {
     await getAllTransactions();
-  } else if (isApproved.value) {
+  } else if (isApproved.value || store.getters.getSelectedMerchant) {
     await getTransactions(merchantId.value);
   } else if (userId.value === null) {
     router.push('/login');
@@ -104,7 +109,7 @@ onMounted(async () => {
         <input v-model="searchInput" type="text" placeholder="Rechercher" class="px-2 py-1 border rounded">
       </div>
     </div>
-    <div v-if="isAdmin">
+    <div v-if="isAdmin && !store.getters.getSelectedMerchant">
       <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400" v-if="searchFilter().length > 0">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
@@ -137,7 +142,7 @@ onMounted(async () => {
         <p>Vous n'avez aucune transaction / Essayez un autre filtre </p>
       </div>
     </div>
-    <div v-else-if="isApproved">
+    <div v-else-if="isApproved || merchantId">
       <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400" v-if="searchFilter().length > 0">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
