@@ -38,8 +38,8 @@
       Qu'entendez-vous par "pas encore inscrit" ?
     </router-link>
   </p>
-  <h3 class="text-lg text-center font-medium text-red-600 mt-8" v-if="this.output">
-    {{ this.output }}
+  <h3 class="text-lg text-center font-medium text-red-600 mt-8" v-if="output">
+    {{ output }}
   </h3>
 </template>
 
@@ -86,4 +86,6 @@ const login = async () => {
     output.value = 'Une erreur est survenue';
   }
 };
+
+defineExpose({ output });
 </script>
