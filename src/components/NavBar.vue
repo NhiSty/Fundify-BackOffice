@@ -9,9 +9,9 @@ const selectedMerchant = computed(() => store.getters.getSelectedMerchant);
 const isLoggedIn = computed(() => store.getters.getAuthData.isLoggedIn);
 const isAdmin = computed(() => store.getters.getAuthData.isAdmin);
 const isMerchant = computed(() => store.getters.getAuthData.isMerchant);
-let isApproved
+let isApproved;
 
-if (selectedMerchant !== null) {
+if (selectedMerchant.value !== null) {
   isApproved = computed(() => store.getters.getSelectedMerchant);
 } else {
   isApproved = computed(() => store.getters.getAuthData.isApproved);

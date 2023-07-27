@@ -1,6 +1,8 @@
 <script setup>
 import { reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const registerFormData = reactive({
   email: '',
   password: '',
@@ -21,15 +23,20 @@ const output = ref('');
 function onFileChange(e) {
   const file = e.target.files[0];
   if (file && file.type === 'application/pdf') {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      registerFormData.kbis = reader.result;
-    };
-    reader.readAsDataURL(file);
+    registerFormData.kbis = file;
   } else {
     alert('Veuillez télécharger un fichier PDF.');
     registerFormData.kbis = '';
   }
+}
+
+function createBase64File(fileObject) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(fileObject);
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = (error) => reject(error);
+  });
 }
 
 async function register() {
@@ -49,23 +56,30 @@ async function register() {
     output.value = 'Veuillez remplir tous les champs';
     return;
   }
-  // Send a POST request to your server to login the user
+
+  const base64File = await createBase64File(registerFormData.kbis);
+  const { kbis, ...restInput } = registerFormData;
+
   const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(registerFormData),
+    body: JSON.stringify({
+      kbis: base64File,
+      ...restInput,
+    }),
   });
 
   if (response.ok) {
-    this.$router.push('/login');
+    router.push('/login');
   } else if (response.status === 409) {
     output.value = 'Cet email est déjà utilisé';
   } else {
     output.value = 'Une erreur est survenue';
   }
 }
+
 </script>
 
 <template>
@@ -194,7 +208,4 @@ async function register() {
       </button>
 
   </form>
-
-  <div class="text-red-500 text-center m-2" v-if="output !== ''">{{ output }}</div>
-
 </template>

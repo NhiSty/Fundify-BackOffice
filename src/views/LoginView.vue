@@ -38,47 +38,47 @@
     </h3>
   </template>
 
-<script>
-export default {
-  name: 'LoginView',
-  data() {
-    return {
-      input: {
-        email: '',
-        password: '',
-      },
-      output: '',
-    };
-  },
-  methods: {
-    async login() {
-      // Make sure all fields are filled
-      if (!this.input.email || !this.input.password) {
-        this.output = 'Veuillez remplir tous les champs';
-        console.log(this.input);
-        return;
-      }
+<script setup>
+import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
-      // Send a POST request to your server to login the user
-      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(this.input),
-        credentials: 'include',
-      });
+const router = useRouter();
+const store = useStore();
 
-      if (response.ok) {
-        this.output = 'Connexion réussie !';
-        await this.$store.dispatch('checkAuth');
-        this.$router.push('/');
-      } else if (response.status === 401) {
-        this.output = 'Email ou mot de passe incorrect';
-      } else {
-        this.output = 'Une erreur est survenue';
-      }
+let input = reactive({
+  email: '',
+  password: '',
+});
+
+let output = ref('');
+
+const login = async () => {
+  // Make sure all fields are filled
+  if (!input.email || !input.password) {
+    output.value = 'Veuillez remplir tous les champs';
+    console.log(input);
+    return;
+  }
+
+  // Send a POST request to your server to login the user
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
     },
-  },
+    body: JSON.stringify(input),
+    credentials: 'include',
+  });
+
+  if (response.ok) {
+    output.value = 'Connexion réussie !';
+    await store.dispatch('checkAuth');
+    router.push('/');
+  } else if (response.status === 401) {
+    output.value = 'Email ou mot de passe incorrect';
+  } else {
+    output.value = 'Une erreur est survenue';
+  }
 };
 </script>
