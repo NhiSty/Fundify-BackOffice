@@ -1,5 +1,5 @@
 <script setup>
-import { RouterView, useRoute } from 'vue-router';
+import { RouterView, useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import {
   computed, onMounted, ref, watch,
@@ -7,11 +7,11 @@ import {
 import NavBar from './components/NavBar.vue';
 
 const store = useStore();
-const route = useRoute();
+const router = useRouter();
 
 const containerClass = ref('');
 
-watch(route, (newRoute) => {
+watch(router, (newRoute) => {
   containerClass.value = newRoute.path !== '/' ? 'container mx-auto mt-8' : '';
 });
 
@@ -20,7 +20,7 @@ onMounted(async () => {
   const isLoggedIn = computed(() => store.state.isLoggedIn);
 
   if (isLoggedIn.value) {
-    route.push('/dashboard');
+    router.push('/dashboard');
   }
 });
 </script>
