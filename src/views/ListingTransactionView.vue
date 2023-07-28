@@ -117,7 +117,7 @@ onMounted(async () => {
           <td class="px-6 py-4">{{ transaction.userId }}</td>
           <td class="px-6 py-4">
             <button class="px-4 py-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700"
-                    @click="goToTransactionDetails(transaction.id)">
+                    @click="goToTransactionDetails(transaction.transactionId)">
               Voir détails
             </button>
           </td>

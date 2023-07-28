@@ -644,6 +644,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@iconsans/vue@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@iconsans/vue@npm:1.0.3"
+  dependencies:
+    vue: ^3.2.47
+  checksum: 3f83d1522ac7deef162e091e254943171d56b6f1a190776c781e853cff81fc7da1fd226ae8c2f2b0b896998074e80394e44f78fb405aea2b8bda9ead44254295
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -2823,6 +2832,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "fundify-backoffice@workspace:."
   dependencies:
+    "@iconsans/vue": ^1.0.3
     "@vitejs/plugin-vue": ^4.1.0
     autoprefixer: ^10.4.14
     chart.js: ^4.3.1
@@ -2835,6 +2845,7 @@ __metadata:
     jwt-decode: ^3.1.2
     postcss: ^8.4.23
     sass: ^1.62.1
+    swrv: ^1.0.4
     tailwindcss: ^3.3.2
     vite: ^4.3.9
     vue: ^3.2.47
@@ -5436,6 +5447,15 @@ __metadata:
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
   checksum: 53b1e247e68e05db7b3808b99b892bd36fb096e6fba213a06da7fab22045e97597db425c724f2bbd6c99a3c295e1e73f3e4de78592289f38431049e1277ca0ae
+  languageName: node
+  linkType: hard
+
+"swrv@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "swrv@npm:1.0.4"
+  peerDependencies:
+    vue: ">=3.2.26 < 4"
+  checksum: 6de43116e19ea22a8b76bd54c5b18571b84a32b0d4d1bfe80e9e562bd67d4464c1da73b3f60e6bf2b2f88e6e4576e596408dfb22a5af13c8186254395c466e91
   languageName: node
   linkType: hard
 
