@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex flex-col items-center mb-4" v-if="isApproved || store.state.selectedMerchant !== null">
+    <div class="flex flex-col items-center mb-4" v-if="isApproved || selectedMerchant">
       <div class="mb-6">
         <h1 class="text-3xl font-semibold">Tableau de bord</h1>
       </div>
@@ -21,7 +21,7 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col items-center mb-4" v-if="isAdmin && store.state.selectedMerchant === null">
+    <div class="flex flex-col items-center mb-4" v-if="isAdmin && !selectedMerchant">
       <div class="mb-6">
         <h1 class="text-3xl font-semibold">Tableau de bord</h1>
       </div>
@@ -48,7 +48,7 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col items-center mb-4" v-else-if="!isApproved">
+    <div class="flex flex-col items-center mb-4" v-else-if="!isApproved && !selectedMerchant">
       <MerchantWaiting />
     </div>
   </div>
@@ -68,9 +68,10 @@ const store = useStore();
 const isAdmin = computed(() => store.state.isAdmin);
 const isLogged = computed(() => store.state.isLoggedIn);
 const isApproved = computed(() => store.state.isApproved);
+const selectedMerchant = localStorage.getItem('selectedMerchant');
 const merchantId = computed(() => {
-  if (store.getters.getSelectedMerchant) {
-    return store.getters.getSelectedMerchant;
+  if (selectedMerchant !== null) {
+    return selectedMerchant;
   }
   return store.state.merchantId;
 });

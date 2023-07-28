@@ -5,8 +5,8 @@ import {
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import TransactionStatusChip from '../components/TransactionStatusChip.vue';
-import OperationStatusChip from "../components/OperationStatusChip.vue";
-import CustomDialog from "../components/CustomDialog.vue";
+import OperationStatusChip from '../components/OperationStatusChip.vue';
+import CustomDialog from '../components/CustomDialog.vue';
 
 const transactionDetails = ref({});
 
