@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex flex-col items-center mb-4" v-if="isApproved || store.state.selectedMerchant !== null">
+    <div class="flex flex-col items-center mb-4" v-if="isApproved || selectedMerchant">
       <div class="mb-6">
         <h1 class="text-3xl font-semibold">Tableau de bord</h1>
       </div>
@@ -21,7 +21,7 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col items-center mb-4" v-if="isAdmin && store.state.selectedMerchant === null">
+    <div class="flex flex-col items-center mb-4" v-if="isAdmin && !selectedMerchant">
       <div class="mb-6">
         <h1 class="text-3xl font-semibold">Tableau de bord</h1>
       </div>
@@ -40,15 +40,17 @@
             <canvas ref="merchantValidationsChart"></canvas>
           </div>
         </div>
-        <div class="border border-gray-300 shadow">
-          <h3 class="text-xl p-3">Transactions par statut</h3>
-          <div class="p-3">
-            <canvas ref="transactionStatusChart"></canvas>
+        <div class="w-full mb-6 ml-3 place-self-center">
+          <div class="border border-gray-300 shadow">
+            <h3 class="text-xl p-3">Transactions par statut</h3>
+            <div class="p-3">
+              <canvas ref="transactionStatusChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="flex flex-col items-center mb-4" v-else-if="!isApproved">
+    <div class="flex flex-col items-center mb-4" v-else-if="!isApproved && !selectedMerchant">
       <MerchantWaiting />
     </div>
   </div>
@@ -68,9 +70,10 @@ const store = useStore();
 const isAdmin = computed(() => store.state.isAdmin);
 const isLogged = computed(() => store.state.isLoggedIn);
 const isApproved = computed(() => store.state.isApproved);
+const selectedMerchant = localStorage.getItem('selectedMerchant');
 const merchantId = computed(() => {
-  if (store.getters.getSelectedMerchant) {
-    return store.getters.getSelectedMerchant;
+  if (selectedMerchant !== null) {
+    return selectedMerchant;
   }
   return store.state.merchantId;
 });
@@ -82,6 +85,8 @@ const successfullTransactionsChart = ref(null);
 const merchantChart = ref(null);
 const merchantValidationsChart = ref(null);
 const transactionStatusChart = ref(null);
+const merchantRegisteredCount = ref(0);
+const merchantRegisteredDate = ref(null);
 
 const chartOptions = {
   responsive: true,
@@ -119,6 +124,8 @@ onMounted(async () => {
   if (!isLogged.value) {
     router.push('/login');
   } else if (isApproved.value || store.state.selectedMerchant !== null) {
+    console.log('ici');
+
     const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${merchantId.value}/transactions`, {
       method: 'GET',
       headers: {
@@ -127,11 +134,15 @@ onMounted(async () => {
       credentials: 'include',
     });
 
+    console.log(request);
+    console.log('ici');
     const infos = await request.json();
 
-    const successCount = infos.filter((info) => info.status === 'CONFIRMED').length;
-    const pendingCount = infos.filter((info) => info.status === 'PENDING').length;
-    const failureCount = infos.filter((info) => info.status === 'CANCELLED').length;
+    // ['created', 'processing', 'done', 'failed'],
+    const createdCount = infos.filter((info) => info.status === 'created').length;
+    const processingCount = infos.filter((info) => info.status === 'processing').length;
+    const doneCount = infos.filter((info) => info.status === 'done').length;
+    const failedCount = infos.filter((info) => info.status === 'failed').length;
 
     const { dates, totals } = processDailyTotals(infos);
     if (revenueChart.value && successfullTransactionsChart.value) {
@@ -155,12 +166,12 @@ onMounted(async () => {
       new Chart(successfullTransactionsChart.value, {
         type: 'doughnut',
         data: {
-          labels: ['Transactions réussies', 'Transactions en attente', 'Transactions échouées'],
+          labels: ['Transactions créées', 'Transactions en cours', 'Transactions terminées', 'Transactions échouées'],
           datasets: [{
             label: 'Transactions',
-            data: [successCount, pendingCount, failureCount],
-            backgroundColor: ['#6366F1', '#F3F4F6', '#F87171'],
-            borderColor: ['#6366F1', '#F3F4F6', '#F87171'],
+            data: [createdCount, processingCount, doneCount, failedCount],
+            backgroundColor: ['#6366F1', '#F3F4F6', '#34D399', '#F87171'],
+            borderColor: ['#6366F1', '#F3F4F6', '#34D399', '#F87171'],
             borderWidth: 1,
           }],
         },
@@ -168,42 +179,80 @@ onMounted(async () => {
       });
     }
   } else if (isAdmin.value && store.state.selectedMerchant === null) {
-    const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
+    if (merchantChart.value) {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/kpis/merchants-registered`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        console.log('error : while fetching data');
+        return;
+      }
+      const infos = await response.json();
 
-    const infos = await response.json();
+      if (Array.isArray(infos)) {
+        // eslint-disable-next-line no-underscore-dangle
+        infos.sort((a, b) => new Date(a._id) - new Date(b._id));
 
-    if (Array.isArray(infos.merchants)) {
-      merchantCount.value = infos.merchants.length;
-      merchantValidate.value = infos.merchants.filter((info) => info.approved === true).length;
-      merchantWaiting.value = infos.merchants.filter((info) => info.approved === false).length;
-    }
+        // eslint-disable-next-line no-underscore-dangle
+        merchantRegisteredDate.value = infos.map((item) => item._id);
+        merchantRegisteredCount.value = infos.map((item) => item.count);
 
-    const successCount = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
-    const pendingCount = Math.floor(Math.random() * (50 - 250 + 1)) + 250;
-    const failureCount = Math.floor(Math.random() * (100 - 250 + 1)) + 250;
+        merchantCount.value = merchantRegisteredCount.value.reduce((a, b) => a + b, 0);
+      }
 
-    if (merchantChart.value && merchantValidationsChart.value && transactionStatusChart.value) {
       // eslint-disable-next-line
       new Chart(merchantChart.value, {
         type: 'bar',
         data: {
-          labels: ['2021-01-01', '2021-01-02', '2021-01-03', '2021-01-04', '2021-01-05'],
+          labels: merchantRegisteredDate.value,
           datasets: [{
-            label: 'Marchands inscrits',
-            data: Array(5).fill().map(() => Math.floor(Math.random() * (20 - 1 + 1)) + 1),
-            backgroundColor: '#6366F1',
-            borderColor: '#6366F1',
+            label: 'Registered Merchants',
+            data: merchantRegisteredCount.value,
+            backgroundColor: '#7a7de7',
+            borderColor: '#7a7de7',
             borderWidth: 1,
           }],
         },
-        options: chartOptions,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          height: 300,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1,
+              },
+            },
+          },
+        },
       });
+    }
+
+    if (merchantValidationsChart.value) {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/kpis/merchants-status`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        console.log('error : while fetching data');
+        return;
+      }
+      const infos = await response.json();
+
+      if (Array.isArray(infos)) {
+        // eslint-disable-next-line no-underscore-dangle
+        merchantValidate.value = infos.find((info) => info._id === true)?.count || 0;
+        // eslint-disable-next-line no-underscore-dangle
+        merchantWaiting.value = infos.find((info) => info._id === false)?.count || 0;
+      }
 
       // eslint-disable-next-line
       new Chart(merchantValidationsChart.value, {
@@ -218,23 +267,74 @@ onMounted(async () => {
             borderWidth: 1,
           }],
         },
-        options: chartOptions,
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+            },
+          },
+        },
       });
+    }
+
+    if (transactionStatusChart.value) {
+      const getTransactionsByStatusKPIS = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/kpis/transactions-status`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      if (!getTransactionsByStatusKPIS.ok) {
+        console.log('error : while fetching data');
+        return;
+      }
+
+      const transactionsByStatusKPIS = await getTransactionsByStatusKPIS.json();
+
+      // eslint-disable-next-line no-underscore-dangle
+      const transactionCaptured = transactionsByStatusKPIS.find((info) => info._id === 'captured')?.count || 0;
+
+      // eslint-disable-next-line no-underscore-dangle
+      const transactionCreated = transactionsByStatusKPIS.find((info) => info._id === 'created')?.count || 0;
+
+      // eslint-disable-next-line no-underscore-dangle
+      const transactionWaitingRefound = transactionsByStatusKPIS.find((info) => info._id === 'waiting_refound')?.count || 0;
+
+      // eslint-disable-next-line no-underscore-dangle
+      const transactionRefunded = transactionsByStatusKPIS.find((info) => info._id === 'refunded')?.count || 0;
+
+      // eslint-disable-next-line no-underscore-dangle
+      const transactionPartialRefound = transactionsByStatusKPIS.find((info) => info._id === 'partial_refound')?.count || 0;
+
+      // eslint-disable-next-line no-underscore-dangle
+      const transactionFaild = transactionsByStatusKPIS.find((info) => info._id === 'failed')?.count || 0;
 
       // eslint-disable-next-line
       new Chart(transactionStatusChart.value, {
-        type: 'doughnut',
+        type: 'bar',
         data: {
-          labels: ['Transactions réussies', 'Transactions en attente', 'Transactions échouées'],
+          labels: ['capturées', 'créées', 'en attente de remboursement', 'remboursées', 'partiellement remboursées', 'échouées'],
           datasets: [{
-            label: 'Transactions',
-            data: [successCount, pendingCount, failureCount],
-            backgroundColor: ['#6366F1', '#F3F4F6', '#F87171'],
-            borderColor: ['#6366F1', '#F3F4F6', '#F87171'],
+            label: 'Transactions par statut',
+            data: [transactionCaptured, transactionCreated, transactionWaitingRefound, transactionRefunded, transactionPartialRefound, transactionFaild],
+            backgroundColor: ['#6366F1', '#84de20', '#F87171', '#854d0e', '#134e4a', '#d8b4fe'],
+            borderColor: ['#6366F1', '#84de20', '#F87171', '#854d0e', '#134e4a', '#d8b4fe'],
             borderWidth: 1,
           }],
         },
-        options: chartOptions,
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1,
+              },
+            },
+          },
+        },
       });
     }
   }

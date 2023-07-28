@@ -5,28 +5,33 @@ import { ref, computed } from 'vue';
 const store = useStore();
 
 const selectedMerchant = localStorage.getItem('selectedMerchant');
+const isApproved = computed(() => store.state.isApproved);
 let id;
-
 if (selectedMerchant !== null) {
   id = computed(() => selectedMerchant);
 } else {
   id = computed(() => store.state.merchantId);
 }
-const isMerchant = computed(() => store.state.isMerchant);
-const isApproved = computed(() => store.state.isApproved);
 
-const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}`, {
-  method: 'GET',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  credentials: 'include',
-});
+let infos; let clientToken; let
+  clientSecret;
+if (isApproved.value || selectedMerchant !== null) {
+  console.log(id.value);
+  const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
 
-const infos = await request.json();
+  infos = await request.json();
 
-const clientToken = ref(infos.clientToken);
-const clientSecret = ref(infos.clientSecret);
+  console.log(infos);
+
+  clientToken = ref(infos.clientToken);
+  clientSecret = ref(infos.clientSecret);
+}
 
 async function generateNewCredentials() {
   fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}/credentials`, {
@@ -44,13 +49,10 @@ async function generateNewCredentials() {
       console.error('Error:', error);
     });
 }
-
 </script>
+
 <template>
-  <div v-if="isMerchant && !isApproved">
-    <p class="text-lg font-semibold text-red-500 mb-4">Fait pas le malin, tu n'es pas encore approuvé !</p>
-  </div>
-  <div v-else class="flex flex-row-screen justify-center items-center">
+  <div v-if="isApproved || selectedMerchant !== null" class="flex flex-row-screen justify-center items-center">
     <div class="flex flex-col items-center py-10">
       <img
           class="w-24 h-24 mb-3 rounded-full shadow-lg"
@@ -67,15 +69,20 @@ async function generateNewCredentials() {
         <dd class="text-lg font-semibold"> confirmation url : {{ infos.confirmationRedirectUrl }}</dd>
         <dd class="text-lg font-semibold"> cancel url : {{ infos.cancellationRedirectUrl }}</dd>
         <dd class="text-lg font-semibold"> currency : {{ infos.currency }}</dd>
+        <dd class="text-lg font-semibold"> id : {{ infos.id }}</dd>
         <dd class="text-lg font-semibold">  token : {{ clientToken }}</dd>
         <dd class="text-lg font-semibold"> secret : {{ clientSecret }}</dd>
 
         <button class="px-4 py-2 mt-5 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-gray-900 rounded-md hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
             @click="generateNewCredentials"
+            v-if="isApproved"
         >
           Générer des nouveaux crédentials
         </button>
 
     </div>
+  </div>
+  <div v-else class="flex flex-col items-center py-10">
+    <p class="text-lg font-semibold text-red-500 mb-4">Fait pas le malin, tu n'es pas encore approuvé !</p>
   </div>
 </template>

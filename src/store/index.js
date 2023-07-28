@@ -27,7 +27,7 @@ const store = createStore({
     },
     getSelectedMerchant(state) {
       return state.selectedMerchant;
-    }
+    },
   },
   mutations: {
     setAuthData(state, payload) {

@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-let input = reactive({
+const input = reactive({
   lastname: '',
   firstname: '',
   email: '',
@@ -14,7 +14,7 @@ let input = reactive({
   confirmPassword: '',
 });
 
-let output = ref('');
+const output = ref('');
 
 const register = async () => {
   // Make sure all fields are filled
@@ -53,6 +53,7 @@ defineExpose({ output });
 </script>
 
 <template>
+  <div>
     <form name="login-form" class="max-w-sm mx-auto">
       <h2 class="my-2 text-2xl">Inscription</h2>
 
@@ -117,4 +118,5 @@ defineExpose({ output });
     <h3 class="text-lg text-center font-medium text-red-600 mt-8" v-if="output">
       {{ output }}
     </h3>
+  </div>
 </template>

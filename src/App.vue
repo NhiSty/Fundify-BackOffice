@@ -7,12 +7,11 @@ import {
 import NavBar from './components/NavBar.vue';
 
 const store = useStore();
-const route = useRoute();
 const router = useRouter();
 
 const containerClass = ref('');
 
-watch(route, (newRoute) => {
+watch(router, (newRoute) => {
   containerClass.value = newRoute.path !== '/' ? 'container mx-auto mt-8' : '';
 });
 
@@ -21,7 +20,7 @@ onMounted(async () => {
   const isLoggedIn = computed(() => store.state.isLoggedIn);
 
   if (!isLoggedIn.value) {
-    await router.push('/login');
+    router.push('/login');
   }
 });
 </script>

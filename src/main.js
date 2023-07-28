@@ -1,3 +1,4 @@
+/* eslint import/no-unresolved: [2, { ignore: ['^vuetify'] }] */
 import './style.scss';
 import 'vuetify/styles';
 
