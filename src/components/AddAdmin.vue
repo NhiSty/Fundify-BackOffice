@@ -75,16 +75,11 @@ const register = async () => {
   // Make sure all fields are filled
   if (!input.lastname || !input.firstname || !input.email || !input.password || !input.confirmPassword) {
     output.value = 'Veuillez remplir tous les champs';
-    console.log('input1');
-    console.log(input);
-
     return;
   }
 
   if (input.password !== input.confirmPassword) {
     output.value = 'Les mots de passe ne correspondent pas';
-    console.log('input2');
-    console.log(input);
     return;
   }
 

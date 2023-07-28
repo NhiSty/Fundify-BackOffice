@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-6">
     <div class="flex flex-col items-center mb-4" v-if="isApproved || selectedMerchant">
       <div class="mb-6">
         <h1 class="text-3xl font-semibold">Tableau de bord</h1>
@@ -124,8 +124,6 @@ onMounted(async () => {
   if (!isLogged.value) {
     router.push('/login');
   } else if (isApproved.value || store.state.selectedMerchant !== null) {
-    console.log('ici');
-
     const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${merchantId.value}/transactions`, {
       method: 'GET',
       headers: {

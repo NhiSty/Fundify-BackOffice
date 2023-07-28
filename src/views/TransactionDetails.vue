@@ -87,7 +87,6 @@ const createRefund = async (onClose) => {
   if (response.ok) {
     await getTransactionDetails();
     onClose();
-    console.log('Refund created');
   } else {
     console.error('An error occurred.');
   }

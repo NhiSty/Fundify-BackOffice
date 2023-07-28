@@ -86,8 +86,7 @@ const store = createStore({
         localStorage.removeItem('selectedMerchant');
         window.location.href = '/';
       } else {
-        console.log(response);
-        console.log('Une erreur est survenue');
+        console.log('Error logging out');
       }
     },
   },

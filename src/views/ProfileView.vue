@@ -16,7 +16,6 @@ if (selectedMerchant !== null) {
 let infos; let clientToken; let
   clientSecret;
 if (isApproved.value || selectedMerchant !== null) {
-  console.log(id.value);
   const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}`, {
     method: 'GET',
     headers: {
@@ -26,8 +25,6 @@ if (isApproved.value || selectedMerchant !== null) {
   });
 
   infos = await request.json();
-
-  console.log(infos);
 
   clientToken = ref(infos.clientToken);
   clientSecret = ref(infos.clientSecret);
