@@ -130,9 +130,11 @@ onMounted(async () => {
 
     const infos = await request.json();
 
-    const successCount = infos.filter((info) => info.status === 'CONFIRMED').length;
-    const pendingCount = infos.filter((info) => info.status === 'PENDING').length;
-    const failureCount = infos.filter((info) => info.status === 'CANCELLED').length;
+    // ['created', 'processing', 'done', 'failed'],
+    const createdCount = infos.filter((info) => info.status === 'created').length;
+    const processingCount = infos.filter((info) => info.status === 'processing').length;
+    const doneCount = infos.filter((info) => info.status === 'done').length;
+    const failedCount = infos.filter((info) => info.status === 'failed').length;
 
     const { dates, totals } = processDailyTotals(infos);
     if (revenueChart.value && successfullTransactionsChart.value) {
@@ -156,12 +158,12 @@ onMounted(async () => {
       new Chart(successfullTransactionsChart.value, {
         type: 'doughnut',
         data: {
-          labels: ['Transactions réussies', 'Transactions en attente', 'Transactions échouées'],
+          labels: ['Transactions créées', 'Transactions en cours', 'Transactions terminées', 'Transactions échouées'],
           datasets: [{
             label: 'Transactions',
-            data: [successCount, pendingCount, failureCount],
-            backgroundColor: ['#6366F1', '#F3F4F6', '#F87171'],
-            borderColor: ['#6366F1', '#F3F4F6', '#F87171'],
+            data: [createdCount, processingCount, doneCount, failedCount],
+            backgroundColor: ['#6366F1', '#F3F4F6', '#34D399', '#F87171'],
+            borderColor: ['#6366F1', '#F3F4F6', '#34D399', '#F87171'],
             borderWidth: 1,
           }],
         },
