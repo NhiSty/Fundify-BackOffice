@@ -7,6 +7,8 @@ const store = useStore();
 const selectedMerchant = localStorage.getItem('selectedMerchant');
 let id;
 
+const isApproved = computed(() => store.state.isApproved);
+
 if (selectedMerchant !== null) {
   id = computed(() => selectedMerchant);
 } else {
@@ -14,18 +16,23 @@ if (selectedMerchant !== null) {
 }
 const isMerchant = computed(() => store.state.isMerchant);
 
-const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}`, {
-  method: 'GET',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  credentials: 'include',
-});
+let infos, clientToken, clientSecret
 
-const infos = await request.json();
+if (isApproved.value) {
+  console.log(isApproved.value);
+  const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
 
-const clientToken = ref(infos.clientToken);
-const clientSecret = ref(infos.clientSecret);
+  infos = await request.json();
+
+  clientToken = ref(infos.clientToken);
+  clientSecret = ref(infos.clientSecret);
+}
 
 async function generateNewCredentials() {
   fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}/credentials`, {
@@ -46,7 +53,7 @@ async function generateNewCredentials() {
 
 </script>
 <template>
-  <div v-if="!isMerchant">
+  <div v-if="!isMerchant || !isApproved" class="flex flex-col items-center py-10">
     <p class="text-lg font-semibold text-red-500 mb-4">Fait pas le malin, tu n'es pas encore approuvé !</p>
   </div>
   <div v-else class="flex flex-row-screen justify-center items-center">
@@ -66,6 +73,7 @@ async function generateNewCredentials() {
         <dd class="text-lg font-semibold"> confirmation url : {{ infos.confirmationRedirectUrl }}</dd>
         <dd class="text-lg font-semibold"> cancel url : {{ infos.cancellationRedirectUrl }}</dd>
         <dd class="text-lg font-semibold"> currency : {{ infos.currency }}</dd>
+        <dd class="text-lg font-semibold"> id : {{ infos.id }}</dd>
         <dd class="text-lg font-semibold">  token : {{ clientToken }}</dd>
         <dd class="text-lg font-semibold"> secret : {{ clientSecret }}</dd>
 
