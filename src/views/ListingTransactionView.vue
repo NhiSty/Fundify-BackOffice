@@ -58,8 +58,8 @@ const getTransactions = async (id) => {
   }
 };
 
-const detailTransaction = async (id) => {
-  console.log(id);
+const goToTransactionDetails = async (id) => {
+  router.push(`/listing-transaction/${id}`);
 };
 
 const searchFilter = () => {
@@ -117,7 +117,7 @@ onMounted(async () => {
           <td class="px-6 py-4">{{ transaction.userId }}</td>
           <td class="px-6 py-4">
             <button class="px-4 py-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700"
-                    @click="detailTransaction(transaction.id)">
+                    @click="goToTransactionDetails(transaction.id)">
               Voir détails
             </button>
           </td>
@@ -149,7 +149,7 @@ onMounted(async () => {
           <td class="px-6 py-4">{{ transaction.userId }}</td>
           <td class="px-6 py-4">
             <button class="px-4 py-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700"
-                    @click="detailTransaction(transaction.id)">
+                    @click="goToTransactionDetails(transaction.id)">
               Voir détails
             </button>
           </td>
