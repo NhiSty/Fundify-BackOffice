@@ -2109,9 +2109,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.431":
-  version: 1.4.473
-  resolution: "electron-to-chromium@npm:1.4.473"
-  checksum: f7fe72d606d2256e020b1c9d1305af098c7798147f6293cc3f213b086c0982fc2121b3bcf65740e237c612089f435d722434c2419e994e434469d2d07a9feffa
+  version: 1.4.475
+  resolution: "electron-to-chromium@npm:1.4.475"
+  checksum: 3e7a538c486b351c13bcd05295535b2b5b0a2980dcf3504457fe47c6689d74a87fd62eab629227dcc86b66cfd732076667d6392f998b13995a8b54eff8073fb8
   languageName: node
   linkType: hard
 
@@ -2823,6 +2823,7 @@ __metadata:
     vite: ^4.3.9
     vue: ^3.2.47
     vue-router: ^4.2.2
+    vuetify: ^3.3.9
     vuex: ^4.1.0
   languageName: unknown
   linkType: soft
@@ -4815,7 +4816,7 @@ __metadata:
     "@jest/schemas": ^29.6.0
     ansi-styles: ^5.0.0
     react-is: ^18.0.0
-  checksum: 6f923a2379a37a425241dc223d76f671c73c4f37dba158050575a54095867d565c068b441843afdf3d7c37bed9df4bbadf46297976e60d4149972b779474203a
+  checksum: a0f972a44f959023c0df9cdfe9eed7540264d7f7ddf74667db8a5294444d5aa153fd47d20327df10ae86964e2ceec10e46ea06b1a5c9c12e02348b78c952c9fc
   languageName: node
   linkType: hard
 
@@ -5750,6 +5751,28 @@ __metadata:
     "@vue/server-renderer": 3.3.4
     "@vue/shared": 3.3.4
   checksum: 58b6c62a66a375ce5df460fcb7ba41b37c8637c635faf06ef472ae4197f412cf9ad83586cd8e3f66c486404fbe8550e694f90ff724a571d1ba78830791099c59
+  languageName: node
+  linkType: hard
+
+"vuetify@npm:^3.3.9":
+  version: 3.3.10
+  resolution: "vuetify@npm:3.3.10"
+  peerDependencies:
+    typescript: ">=4.7"
+    vite-plugin-vuetify: ^1.0.0-alpha.12
+    vue: ^3.2.0
+    vue-i18n: ^9.0.0
+    webpack-plugin-vuetify: ^2.0.0-alpha.11
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+    vite-plugin-vuetify:
+      optional: true
+    vue-i18n:
+      optional: true
+    webpack-plugin-vuetify:
+      optional: true
+  checksum: f11aa2821c0fafff31ac231254c3f9197b01140968575787a73a637601c007997d57594dcfe4f7aca5c78d42663469291b483ad732d3bda47808c24ba2f3c620
   languageName: node
   linkType: hard
 

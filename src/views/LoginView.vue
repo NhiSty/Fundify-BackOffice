@@ -74,7 +74,11 @@ const login = async () => {
   if (response.ok) {
     output.value = 'Connexion réussie !';
     await store.dispatch('checkAuth');
-    router.push('/');
+    const { isAdmin } = store.state;
+    if (!isAdmin) {
+      return;
+    }
+    router.push('/dashboard');
   } else if (response.status === 401) {
     output.value = 'Email ou mot de passe incorrect';
   } else {

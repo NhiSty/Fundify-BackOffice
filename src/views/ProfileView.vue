@@ -7,14 +7,13 @@ const store = useStore();
 const selectedMerchant = localStorage.getItem('selectedMerchant');
 let id;
 
-const isApproved = computed(() => store.state.isApproved);
-
 if (selectedMerchant !== null) {
   id = computed(() => selectedMerchant);
 } else {
   id = computed(() => store.state.merchantId);
 }
 const isMerchant = computed(() => store.state.isMerchant);
+const isApproved = computed(() => store.state.isApproved);
 
 let infos, clientToken, clientSecret
 
