@@ -2,8 +2,10 @@
 <script setup>
 import { computed } from 'vue';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
 const store = useStore();
+const router = useRouter();
 
 const selectedMerchant = computed(() => store.getters.getSelectedMerchant);
 const isLoggedIn = computed(() => store.getters.getAuthData.isLoggedIn);
@@ -20,6 +22,15 @@ if (selectedMerchant.value !== null) {
 const logout = async () => {
   await store.dispatch('logout');
 };
+
+const goToHome = () => {
+  if (isLoggedIn.value) {
+    router.push('/dashboard');
+  } else {
+    router.push('/');
+  }
+};
+
 </script>
 
 <template>
@@ -27,14 +38,14 @@ const logout = async () => {
       <div
         class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
       >
-        <a href="/" class="flex items-center">
+        <a v-on:click.prevent="goToHome()" class="flex items-center">
           <img
             src="https://flowbite.com/docs/images/logo.svg"
             class="h-8 mr-3"
             alt="Flowbite Logo"
           />
           <span
-            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
+            class="self-center text-2xl font-semibold whitespace-nowrap"
             >Fundify</span
           >
         </a>
@@ -113,3 +124,9 @@ const logout = async () => {
       </div>
     </nav>
   </template>
+
+<style>
+a:hover {
+  cursor: pointer;
+}
+</style>

@@ -5,6 +5,9 @@ import { ref, computed } from 'vue';
 const store = useStore();
 
 const selectedMerchant = localStorage.getItem('selectedMerchant');
+
+const isMerchant = computed(() => store.state.isMerchant);
+const isApproved = computed(() => store.state.isApproved);
 let id;
 
 if (selectedMerchant !== null) {
@@ -12,20 +15,25 @@ if (selectedMerchant !== null) {
 } else {
   id = computed(() => store.state.merchantId);
 }
-const isMerchant = computed(() => store.state.isMerchant);
 
-const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}`, {
-  method: 'GET',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  credentials: 'include',
-});
+let infos, clientToken, clientSecret
+if (isApproved.value || selectedMerchant !== null) {
+  console.log(id.value)
+  const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
 
-const infos = await request.json();
+  infos = await request.json();
 
-const clientToken = ref(infos.clientToken);
-const clientSecret = ref(infos.clientSecret);
+  console.log(infos);
+
+  clientToken = ref(infos.clientToken);
+  clientSecret = ref(infos.clientSecret);
+}
 
 async function generateNewCredentials() {
   fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}/credentials`, {
@@ -46,10 +54,7 @@ async function generateNewCredentials() {
 
 </script>
 <template>
-  <div v-if="!isMerchant">
-    <p class="text-lg font-semibold text-red-500 mb-4">Fait pas le malin, tu n'es pas encore approuvé !</p>
-  </div>
-  <div v-else class="flex flex-row-screen justify-center items-center">
+  <div v-if="isApproved || selectedMerchant !== null" class="flex flex-row-screen justify-center items-center">
     <div class="flex flex-col items-center py-10">
       <img
           class="w-24 h-24 mb-3 rounded-full shadow-lg"
@@ -66,6 +71,7 @@ async function generateNewCredentials() {
         <dd class="text-lg font-semibold"> confirmation url : {{ infos.confirmationRedirectUrl }}</dd>
         <dd class="text-lg font-semibold"> cancel url : {{ infos.cancellationRedirectUrl }}</dd>
         <dd class="text-lg font-semibold"> currency : {{ infos.currency }}</dd>
+        <dd class="text-lg font-semibold"> id : {{ infos.id }}</dd>
         <dd class="text-lg font-semibold">  token : {{ clientToken }}</dd>
         <dd class="text-lg font-semibold"> secret : {{ clientSecret }}</dd>
 
@@ -76,5 +82,8 @@ async function generateNewCredentials() {
         </button>
 
     </div>
+  </div>
+  <div v-else class="flex flex-col items-center py-10">
+    <p class="text-lg font-semibold text-red-500 mb-4">Fait pas le malin, tu n'es pas encore approuvé !</p>
   </div>
 </template>

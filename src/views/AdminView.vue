@@ -185,13 +185,13 @@ onMounted(async () => {
                 Refuser
               </button>
             </td>
-            <td class="px-6 py-4" v-if="selectedMerchant === merchant.id">
+            <td class="px-6 py-4" v-if="selectedMerchant === merchant.id && merchant.approved">
               <button class="px-4 py-2 font-semibold text-white bg-red-500 rounded hover:bg-red-700"
                 @click="unselectMerchant()">
                 Désélectionner
               </button>
             </td>
-            <td class="px-6 py-4" v-else>
+            <td class="px-6 py-4" v-else-if="merchant.approved">
               <button class="px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-700"
                 @click="selectMerchant(merchant.id)">
                 Sélectionner
