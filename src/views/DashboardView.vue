@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex flex-col items-center mb-4" v-if="isApproved || store.state.selectedMerchant !== null">
+    <div class="flex flex-col items-center mb-4" v-if="isApproved || selectedMerchant">
       <div class="mb-6">
         <h1 class="text-3xl font-semibold">Tableau de bord</h1>
       </div>
@@ -21,7 +21,7 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col items-center mb-4" v-if="isAdmin && store.state.selectedMerchant === null">
+    <div class="flex flex-col items-center mb-4" v-if="isAdmin && !selectedMerchant">
       <div class="mb-6">
         <h1 class="text-3xl font-semibold">Tableau de bord</h1>
       </div>
@@ -50,7 +50,7 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col items-center mb-4" v-else-if="!isApproved">
+    <div class="flex flex-col items-center mb-4" v-else-if="!isApproved && !selectedMerchant">
       <MerchantWaiting />
     </div>
   </div>
@@ -70,9 +70,10 @@ const store = useStore();
 const isAdmin = computed(() => store.state.isAdmin);
 const isLogged = computed(() => store.state.isLoggedIn);
 const isApproved = computed(() => store.state.isApproved);
+const selectedMerchant = localStorage.getItem('selectedMerchant');
 const merchantId = computed(() => {
-  if (store.getters.getSelectedMerchant) {
-    return store.getters.getSelectedMerchant;
+  if (selectedMerchant !== null) {
+    return selectedMerchant;
   }
   return store.state.merchantId;
 });
@@ -137,9 +138,11 @@ onMounted(async () => {
     console.log('ici');
     const infos = await request.json();
 
-    const successCount = infos.filter((info) => info.status === 'CONFIRMED').length;
-    const pendingCount = infos.filter((info) => info.status === 'PENDING').length;
-    const failureCount = infos.filter((info) => info.status === 'CANCELLED').length;
+    // ['created', 'processing', 'done', 'failed'],
+    const createdCount = infos.filter((info) => info.status === 'created').length;
+    const processingCount = infos.filter((info) => info.status === 'processing').length;
+    const doneCount = infos.filter((info) => info.status === 'done').length;
+    const failedCount = infos.filter((info) => info.status === 'failed').length;
 
     const { dates, totals } = processDailyTotals(infos);
     if (revenueChart.value && successfullTransactionsChart.value) {
@@ -163,12 +166,12 @@ onMounted(async () => {
       new Chart(successfullTransactionsChart.value, {
         type: 'doughnut',
         data: {
-          labels: ['Transactions réussies', 'Transactions en attente', 'Transactions échouées'],
+          labels: ['Transactions créées', 'Transactions en cours', 'Transactions terminées', 'Transactions échouées'],
           datasets: [{
             label: 'Transactions',
-            data: [successCount, pendingCount, failureCount],
-            backgroundColor: ['#6366F1', '#F3F4F6', '#F87171'],
-            borderColor: ['#6366F1', '#F3F4F6', '#F87171'],
+            data: [createdCount, processingCount, doneCount, failedCount],
+            backgroundColor: ['#6366F1', '#F3F4F6', '#34D399', '#F87171'],
+            borderColor: ['#6366F1', '#F3F4F6', '#34D399', '#F87171'],
             borderWidth: 1,
           }],
         },

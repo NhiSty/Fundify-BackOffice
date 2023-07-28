@@ -5,20 +5,18 @@ import { ref, computed } from 'vue';
 const store = useStore();
 
 const selectedMerchant = localStorage.getItem('selectedMerchant');
-
-const isMerchant = computed(() => store.state.isMerchant);
 const isApproved = computed(() => store.state.isApproved);
 let id;
-
 if (selectedMerchant !== null) {
   id = computed(() => selectedMerchant);
 } else {
   id = computed(() => store.state.merchantId);
 }
 
-let infos, clientToken, clientSecret
+let infos; let clientToken; let
+  clientSecret;
 if (isApproved.value || selectedMerchant !== null) {
-  console.log(id.value)
+  console.log(id.value);
   const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}`, {
     method: 'GET',
     headers: {
@@ -51,8 +49,8 @@ async function generateNewCredentials() {
       console.error('Error:', error);
     });
 }
-
 </script>
+
 <template>
   <div v-if="isApproved || selectedMerchant !== null" class="flex flex-row-screen justify-center items-center">
     <div class="flex flex-col items-center py-10">
@@ -77,6 +75,7 @@ async function generateNewCredentials() {
 
         <button class="px-4 py-2 mt-5 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-gray-900 rounded-md hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
             @click="generateNewCredentials"
+            v-if="isApproved"
         >
           Générer des nouveaux crédentials
         </button>

@@ -7,7 +7,7 @@ import LoginView from '../views/LoginView.vue';
 import MerchantLoginView from '../views/MerchantLoginView.vue';
 import MerchantRegisterView from '../views/MerchantRegisterView.vue';
 import ListingTransactionView from '../views/ListingTransactionView.vue';
-import TransactionDetails from "../views/TransactionDetails.vue";
+import TransactionDetails from '../views/TransactionDetails.vue';
 
 const router = createRouter({
   history: createWebHistory(),
