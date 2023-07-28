@@ -1,7 +1,9 @@
 <script setup>
 import { RouterView, useRoute } from 'vue-router';
 import { useStore } from 'vuex';
-import { onMounted, ref, watch } from 'vue';
+import {
+  computed, onMounted, ref, watch,
+} from 'vue';
 import NavBar from './components/NavBar.vue';
 
 const store = useStore();
@@ -15,6 +17,11 @@ watch(route, (newRoute) => {
 
 onMounted(async () => {
   await store.dispatch('checkAuth');
+  const isLoggedIn = computed(() => store.state.isLoggedIn);
+
+  if (isLoggedIn.value) {
+    route.push('/dashboard');
+  }
 });
 </script>
 

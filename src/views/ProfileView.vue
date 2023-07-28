@@ -13,6 +13,7 @@ if (selectedMerchant !== null) {
   id = computed(() => store.state.merchantId);
 }
 const isMerchant = computed(() => store.state.isMerchant);
+const isApproved = computed(() => store.state.isApproved);
 
 const request = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/merchants/${id.value}`, {
   method: 'GET',
@@ -46,7 +47,7 @@ async function generateNewCredentials() {
 
 </script>
 <template>
-  <div v-if="!isMerchant">
+  <div v-if="isMerchant && !isApproved">
     <p class="text-lg font-semibold text-red-500 mb-4">Fait pas le malin, tu n'es pas encore approuvé !</p>
   </div>
   <div v-else class="flex flex-row-screen justify-center items-center">
