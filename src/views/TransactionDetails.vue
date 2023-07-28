@@ -4,11 +4,11 @@ import {
 } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
+import { Refresh } from '@iconsans/vue/linear';
 import TransactionStatusChip from '../components/TransactionStatusChip.vue';
 import OperationStatusChip from '../components/OperationStatusChip.vue';
 import CustomDialog from '../components/CustomDialog.vue';
 import formatDate from '../utils/formatDate';
-import {Refresh} from "@iconsans/vue/linear";
 
 const transactionDetails = ref({});
 const refundForm = reactive({
