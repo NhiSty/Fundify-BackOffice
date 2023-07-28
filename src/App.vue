@@ -18,10 +18,6 @@ watch(router, (newRoute) => {
 onMounted(async () => {
   await store.dispatch('checkAuth');
   const isLoggedIn = computed(() => store.state.isLoggedIn);
-
-  if (!isLoggedIn.value) {
-    router.push('/login');
-  }
 });
 </script>
 
