@@ -1,4 +1,5 @@
 <script setup>
+import { Cross } from '@iconsans/vue/linear';
 import { ref } from 'vue';
 
 const open = ref(false);
@@ -22,11 +23,11 @@ function openDialog() {
 
   <v-dialog max-width="500px" v-model="open">
     <v-card>
-      <v-card-title class="title" >
+      <v-card-title class="title">
         <slot name="title"></slot>
-        <slot name="closeDialog" :closeOpen="closeModal">
-          <v-btn density="compact" icon="mdi mid-close" @click="closeModal">
-            <v-icon>mdi-close</v-icon>
+        <slot name="closeDialog" :closeDialog="closeModal">
+          <v-btn density="compact" icon @click="closeModal">
+            <Cross />
           </v-btn>
         </slot>
       </v-card-title>
@@ -38,7 +39,7 @@ function openDialog() {
       <v-card-actions>
         <v-spacer></v-spacer>
 
-        <slot name="actions"></slot>
+        <slot name="actions" :closeDialog="closeModal"></slot>
       </v-card-actions>
     </v-card>
   </v-dialog>

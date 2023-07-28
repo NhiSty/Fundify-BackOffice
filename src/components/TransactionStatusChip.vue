@@ -21,7 +21,7 @@ const getStatusColor = () => {
 const getLabel = () => {
   switch (props.transactionStatus) {
     case 'created':
-      return 'Créer';
+      return 'En attente de paiement';
     case 'captured':
       return 'Payé';
     case 'waiting_refund':

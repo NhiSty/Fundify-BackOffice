@@ -1,5 +1,5 @@
 <script setup>
-import { RouterView, useRoute } from 'vue-router';
+import { RouterView, useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import {
   computed, onMounted, ref, watch,
@@ -8,6 +8,7 @@ import NavBar from './components/NavBar.vue';
 
 const store = useStore();
 const route = useRoute();
+const router = useRouter();
 
 const containerClass = ref('');
 
@@ -19,8 +20,8 @@ onMounted(async () => {
   await store.dispatch('checkAuth');
   const isLoggedIn = computed(() => store.state.isLoggedIn);
 
-  if (isLoggedIn.value) {
-    route.push('/dashboard');
+  if (!isLoggedIn.value) {
+    await router.push('/login');
   }
 });
 </script>
