@@ -12,6 +12,7 @@ const store = createStore({
       isAdmin: false,
       merchantId: null,
       selectedMerchant: localStorage.getItem('selectedMerchant') ? Number(localStorage.getItem('selectedMerchant')) : null,
+      token: localStorage.getItem('token') ? localStorage.getItem('token') : null,
     };
   },
   getters: {
@@ -23,6 +24,7 @@ const store = createStore({
         isApproved: state.isApproved,
         isAdmin: state.isAdmin,
         merchantId: state.merchantId,
+        token: state.token,
       };
     },
     getSelectedMerchant(state) {
@@ -37,6 +39,7 @@ const store = createStore({
       state.isApproved = payload.isApproved;
       state.isAdmin = payload.isAdmin;
       state.merchantId = payload.merchantId;
+      state.token = payload.token;
     },
     setSelectedMerchant(state, payload) {
       state.selectedMerchant = payload;
@@ -45,9 +48,9 @@ const store = createStore({
   },
   actions: {
     checkAuth({ commit }) {
-      const token = document.cookie.split(';').find((cookie) => cookie.trim().startsWith('token='));
+      const token = localStorage.getItem('token');
       if (token) {
-        const decoded = jwtDecode(token.split('=')[1]);
+        const decoded = jwtDecode(token);
         commit('setAuthData', {
           id: decoded.id,
           isLoggedIn: true,
@@ -55,6 +58,7 @@ const store = createStore({
           isApproved: decoded.approved,
           isAdmin: decoded.isAdmin,
           merchantId: decoded.merchantId,
+          token,
         });
       } else {
         commit('setAuthData', {
@@ -64,6 +68,7 @@ const store = createStore({
           isApproved: false,
           isAdmin: false,
           merchantId: null,
+          token: null,
         });
       }
     },
@@ -82,8 +87,10 @@ const store = createStore({
           isApproved: false,
           isAdmin: false,
           merchantId: null,
+          token: null,
         });
         localStorage.removeItem('selectedMerchant');
+        localStorage.removeItem('token');
         window.location.href = '/';
       } else {
         console.log(response);

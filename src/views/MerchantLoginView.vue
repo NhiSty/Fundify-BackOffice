@@ -73,10 +73,11 @@ const login = async () => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(input),
-    credentials: 'include',
   });
 
   if (response.ok) {
+    const data = await response.json();
+    localStorage.setItem('token', data.token);
     output.value = 'Connexion réussie !';
     await store.dispatch('checkAuth');
     router.push('/dashboard');

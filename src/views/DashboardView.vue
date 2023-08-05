@@ -71,6 +71,7 @@ const isAdmin = computed(() => store.state.isAdmin);
 const isLogged = computed(() => store.state.isLoggedIn);
 const isApproved = computed(() => store.state.isApproved);
 const selectedMerchant = localStorage.getItem('selectedMerchant');
+const token = computed(() => store.state.token);
 const merchantId = computed(() => {
   if (selectedMerchant !== null) {
     return selectedMerchant;
@@ -130,8 +131,8 @@ onMounted(async () => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        Cookie: `token=${token.value}`,
       },
-      credentials: 'include',
     });
 
     console.log(request);
@@ -184,8 +185,8 @@ onMounted(async () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          token: token.value,
         },
-        credentials: 'include',
       });
       if (!response.ok) {
         console.log('error : while fetching data');
