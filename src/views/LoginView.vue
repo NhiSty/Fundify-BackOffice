@@ -57,7 +57,6 @@ const login = async () => {
   // Make sure all fields are filled
   if (!input.email || !input.password) {
     output.value = 'Veuillez remplir tous les champs';
-    console.log(input);
     return;
   }
 

@@ -132,8 +132,6 @@ onMounted(async () => {
       credentials: 'include',
     });
 
-    console.log(request);
-    console.log('ici');
     const infos = await request.json();
 
     // ['created', 'processing', 'done', 'failed'],
