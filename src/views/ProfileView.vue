@@ -5,6 +5,7 @@ import { ref, computed } from 'vue';
 const store = useStore();
 
 const selectedMerchant = localStorage.getItem('selectedMerchant');
+const token = computed(() => store.state.token);
 const isApproved = computed(() => store.state.isApproved);
 let id;
 if (selectedMerchant !== null) {
@@ -20,6 +21,7 @@ if (isApproved.value || selectedMerchant !== null) {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      token: token.value,
     },
     credentials: 'include',
   });
@@ -35,8 +37,10 @@ async function generateNewCredentials() {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
+      token: token.value,
     },
     credentials: 'include',
+
   }).then((response) => response.json())
     .then((data) => {
       clientToken.value = data.clientToken;

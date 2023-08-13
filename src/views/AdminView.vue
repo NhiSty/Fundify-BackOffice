@@ -9,6 +9,7 @@ const users = ref([]);
 
 const router = useRouter();
 const store = useStore();
+const token = computed(() => store.state.token);
 
 const selectedMerchant = computed(() => store.state.selectedMerchant);
 // Function to fetch users
@@ -17,6 +18,7 @@ const getUsers = async () => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      token: token.value,
     },
     credentials: 'include',
   });
@@ -38,6 +40,7 @@ const getMerchants = async () => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      token: token.value,
     },
     credentials: 'include',
   });
@@ -59,6 +62,7 @@ const approve = async (id) => {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
+      token: token.value,
     },
     body: JSON.stringify({ approved: true }),
     credentials: 'include',
@@ -77,6 +81,7 @@ const invalidate = async (id) => {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
+      token: token.value,
     },
     body: JSON.stringify({ approved: false }),
     credentials: 'include',
@@ -96,6 +101,7 @@ const setAdmin = async (id) => {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
+      token: token.value,
     },
     body: JSON.stringify({ userId: id }),
     credentials: 'include',

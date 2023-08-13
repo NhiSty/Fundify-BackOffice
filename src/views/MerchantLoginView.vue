@@ -75,6 +75,9 @@ const login = async () => {
     credentials: 'include',
   });
 
+  const data = await response.json();
+  localStorage.setItem('token', data.token);
+
   if (response.ok) {
     output.value = 'Connexion réussie !';
     await store.dispatch('checkAuth');

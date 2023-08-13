@@ -71,6 +71,7 @@ const isAdmin = computed(() => store.state.isAdmin);
 const isLogged = computed(() => store.state.isLoggedIn);
 const isApproved = computed(() => store.state.isApproved);
 const selectedMerchant = localStorage.getItem('selectedMerchant');
+const token = computed(() => store.state.token);
 const merchantId = computed(() => {
   if (selectedMerchant !== null) {
     return selectedMerchant;
@@ -128,6 +129,7 @@ onMounted(async () => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        token: token.value,
       },
       credentials: 'include',
     });
@@ -176,10 +178,12 @@ onMounted(async () => {
     }
   } else if (isAdmin.value && store.state.selectedMerchant === null) {
     if (merchantChart.value) {
+
       const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/kpis/merchants-registered`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          token: token.value,
         },
         credentials: 'include',
       });
@@ -234,6 +238,7 @@ onMounted(async () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          token: token.value,
         },
         credentials: 'include',
       });
@@ -279,6 +284,7 @@ onMounted(async () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          token: token.value,
         },
         credentials: 'include',
       });

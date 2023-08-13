@@ -11,6 +11,7 @@ const router = useRouter();
 const userId = computed(() => store.state.id);
 const isAdmin = computed(() => store.state.isAdmin);
 const isApproved = computed(() => store.state.isApproved);
+const token = computed(() => store.state.token);
 const merchantId = computed(() => {
   if (store.getters.getSelectedMerchant) {
     return store.getters.getSelectedMerchant;
@@ -26,6 +27,7 @@ const getAllTransactions = async () => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      token: token.value,
     },
     credentials: 'include',
   });
@@ -47,6 +49,7 @@ const getTransactions = async (id) => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      token: token.value,
     },
     credentials: 'include',
   });

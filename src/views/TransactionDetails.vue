@@ -20,12 +20,17 @@ const route = useRoute();
 const isAdmin = computed(() => store.state.isAdmin);
 const merchantId = computed(() => store.state.merchantId);
 const id = computed(() => store.state.id);
+const token = computed(() => store.state.token);
 
 const getTransactionDetailsByMerchant = async () => {
   const response = await fetch(
     `${import.meta.env.VITE_SERVER_URL}/api/merchants/${merchantId.value}/transaction/${route.params.id}`,
     {
       method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        token: token.value,
+      },
       credentials: 'include',
     },
   );
@@ -44,6 +49,10 @@ const getTransactionDetailsByAdmin = async () => {
     `${import.meta.env.VITE_SERVER_URL}/api/transaction/${route.params.id}`,
     {
       method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        token: token.value,
+      },
       credentials: 'include',
     },
   );
@@ -53,7 +62,6 @@ const getTransactionDetailsByAdmin = async () => {
     transactionDetails.value = data[0];
     refundForm.amount = transactionDetails.value.refundAmountAvailable;
   }
-  console.error('An error occurred.');
 };
 
 const getTransactionDetails = async () => {
@@ -78,6 +86,7 @@ const createRefund = async (onClose) => {
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      token: token.value,
     },
     body: JSON.stringify({
       transactionId: transactionDetails.value.transactionId,
