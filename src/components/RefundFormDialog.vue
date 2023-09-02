@@ -7,6 +7,8 @@ const props = defineProps({
   transactionDetails: Object,
   createRefund: Function,
   defaultAmount: Number,
+  loading: Boolean,
+  errored: Boolean,
 });
 
 const refundForm = reactive({
@@ -63,6 +65,7 @@ const refundAmountIsValid = computed(() => {
           color="primary"
           @click="() => createRefund(refundForm.amount, closeDialog)"
           :disabled="!refundAmountIsValid"
+          :loading="loading && !errored"
       >
         Rembourser
       </v-btn>

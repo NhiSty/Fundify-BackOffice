@@ -65,7 +65,7 @@ const captureAmountIsValid = computed(() => {
           color="primary"
           @click="() => createCapture(captureForm.amount, closeDialog)"
           :disabled="!captureAmountIsValid"
-          :loading="loading"
+          :loading="loading && !errored"
       >
         Ajouter
       </v-btn>

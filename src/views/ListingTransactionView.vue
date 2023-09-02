@@ -3,6 +3,8 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import MerchantWaiting from '../components/MerchantWaiting.vue';
+import TransactionStatusChip from "../components/TransactionStatusChip.vue";
+import formatDate from "../utils/formatDate.js";
 
 const transactions = ref([]);
 const store = useStore();
@@ -90,7 +92,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="relative overflow-x-auto shadow-md sm:rounded-lg" v-if="isAdmin || isApproved">
+  <div class=" m-6 relative overflow-x-auto shadow-md sm:rounded-lg" v-if="isAdmin || isApproved">
     <h2 class="my-2 text-2xl">Liste des transactions</h2>
     <div class="my-2">
       <label class="block text-sm font-medium text-gray-700">Rechercher par amount - status - currency</label>
@@ -107,6 +109,7 @@ onMounted(async () => {
           <th scope="col" class="px-6 py-3">Devise</th>
           <th scope="col" class="px-6 py-3">Marchand</th>
           <th scope="col" class="px-6 py-3">Utilisateur</th>
+          <th scope="col" class="px-6 py-3">Date</th>
           <th scope="col" class="px-6 py-3">Action</th>
         </tr>
         </thead>
@@ -114,10 +117,11 @@ onMounted(async () => {
         <tr v-for="transaction in searchFilter()" v-bind:key="transaction" class="bg-white border-b dark:bg-gray-800
             dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
           <td class="px-6 py-4">{{ transaction.amount }}</td>
-          <td class="px-6 py-4">{{ transaction.status }}</td>
+          <td class="px-6 py-4"><TransactionStatusChip :transaction-status="transaction.status" /></td>
           <td class="px-6 py-4">{{ transaction.currency }}</td>
           <td class="px-6 py-4">{{ transaction.merchantId }}</td>
           <td class="px-6 py-4">{{ transaction.userId }}</td>
+          <td class="px-6 py-4">{{ formatDate(transaction.createdAt) }}</td>
           <td class="px-6 py-4">
             <button class="px-4 py-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700"
                     @click="goToTransactionDetails(transaction.transactionId)">
@@ -139,6 +143,7 @@ onMounted(async () => {
           <th scope="col" class="px-6 py-3">Status</th>
           <th scope="col" class="px-6 py-3">Devise</th>
           <th scope="col" class="px-6 py-3">Utilisateur</th>
+          <th scope="col" class="px-6 py-3">Date</th>
           <th scope="col" class="px-6 py-3">Action</th>
 
         </tr>
@@ -147,9 +152,10 @@ onMounted(async () => {
         <tr v-for="transaction in searchFilter()" v-bind:key="transaction" class="bg-white border-b dark:bg-gray-800
             dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
           <td class="px-6 py-4">{{ transaction.amount }}</td>
-          <td class="px-6 py-4">{{ transaction.status }}</td>
+          <td class="px-6 py-4"><TransactionStatusChip :transaction-status="transaction.status" /></td>
           <td class="px-6 py-4">{{ transaction.currency }}</td>
           <td class="px-6 py-4">{{ transaction.userId }}</td>
+          <td class="px-6 py-4">{{ formatDate(transaction.createdAt) }}</td>
           <td class="px-6 py-4">
             <button class="px-4 py-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700"
                     @click="goToTransactionDetails(transaction.id)">
