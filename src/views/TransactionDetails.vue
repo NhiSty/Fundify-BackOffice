@@ -1,25 +1,26 @@
 <script setup>
 import {
-  computed, onMounted, reactive, ref,
+  computed, onMounted, ref,
 } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
+// eslint-disable-next-line import/no-unresolved
 import { Refresh } from '@iconsans/vue/linear';
 import TransactionStatusChip from '../components/TransactionStatusChip.vue';
 import OperationStatusChip from '../components/OperationStatusChip.vue';
 import CustomDialog from '../components/CustomDialog.vue';
 import formatDate from '../utils/formatDate';
+import RefundFormDialog from '../components/RefundFormDialog.vue';
+import CaptureFormDialog from '../components/CaptureFormDialog.vue';
 
 const transactionDetails = ref({});
-const refundForm = reactive({
-  amount: '',
-});
+const loading = ref(false);
+const errored = ref(false);
 
 const store = useStore();
 const route = useRoute();
 const isAdmin = computed(() => store.state.isAdmin);
 const merchantId = computed(() => store.state.merchantId);
-const id = computed(() => store.state.id);
 const token = computed(() => store.state.token);
 
 const getTransactionDetailsByMerchant = async () => {
@@ -38,7 +39,6 @@ const getTransactionDetailsByMerchant = async () => {
     const data = await response.json();
     // eslint-disable-next-line prefer-destructuring
     transactionDetails.value = data[0];
-    refundForm.amount = transactionDetails.value.refundAmountAvailable;
   } else {
     console.error('An error occurred.');
   }
@@ -60,7 +60,6 @@ const getTransactionDetailsByAdmin = async () => {
     const data = await response.json();
     // eslint-disable-next-line prefer-destructuring
     transactionDetails.value = data[0];
-    refundForm.amount = transactionDetails.value.refundAmountAvailable;
   }
 };
 
@@ -74,13 +73,9 @@ const getTransactionDetails = async () => {
 
 onMounted(() => getTransactionDetails());
 
-const refundAmountIsValid = computed(() => {
-  const amount = Number(refundForm.amount);
-  const refundAmountAvailable = Number(transactionDetails.value.refundAmountAvailable);
-  return amount > 0 && amount <= refundAmountAvailable;
-});
-
-const createRefund = async (onClose) => {
+const createOperation = async (amount, onClose) => {
+  loading.value = true;
+  errored.value = false;
   const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/operations`, {
     method: 'POST',
     credentials: 'include',
@@ -90,13 +85,16 @@ const createRefund = async (onClose) => {
     },
     body: JSON.stringify({
       transactionId: transactionDetails.value.transactionId,
-      amount: parseFloat(refundForm.amount, 10),
+      amount: parseFloat(amount, 10),
     }),
   });
   if (response.ok) {
+    loading.value = false;
     await getTransactionDetails();
     onClose();
   } else {
+    loading.value = false;
+    errored.value = true;
     console.error('An error occurred.');
   }
 };
@@ -106,7 +104,7 @@ const shortId = (idToShorted) => idToShorted.substring(0, 8);
 </script>
 
 <template>
-  <v-card elevation="4" variant="elevated">
+  <v-card class="custom-card" elevation="4" variant="elevated">
     <v-card-title class="card-title">
       <h1 class="text-2xl font-bold">Transaction #{{ transactionDetails.transactionId }}</h1>
       <v-btn color="blue" variant="outlined" icon @click="getTransactionDetails">
@@ -122,55 +120,28 @@ const shortId = (idToShorted) => idToShorted.substring(0, 8);
           >
             <v-card-subtitle>
               <p class="text-xl font-bold">Montant: {{ transactionDetails.amount }} {{ transactionDetails.currency }}</p>
-              <p class="text-xl font-bold">Montant remboursable: {{ transactionDetails.refundAmountAvailable }} {{ transactionDetails.currency }}</p>
+              <p v-if="transactionDetails.refundAmountAvailable !== 0" class="text-xl font-bold">Montant remboursable: {{ transactionDetails.refundAmountAvailable }} {{ transactionDetails.currency }}</p>
+              <p v-if="transactionDetails.outstandingBalance !== 0" class="text-xl font-bold">Montant à régler: {{ transactionDetails.outstandingBalance }} {{ transactionDetails.currency }}</p>
               <p class="text-xl font-bold">Statut: <TransactionStatusChip :transaction-status="transactionDetails.status" /></p>
             </v-card-subtitle>
 
             <div class="mt-5">
-              <CustomDialog v-if="!['created', 'refunded'].includes(transactionDetails.status)">
-                <template #openButton="{ openDialog }">
-                  <v-btn
-                      color="primary"
-                      @click="openDialog"
-                  >
-                    Rembourser
-                  </v-btn>
-                </template>
-                <template #title>
-                  <h3 class="text-xl font-bold">Effectuer un remboursement</h3>
-                </template>
-                <template #content>
-                  <v-form>
-                    <v-text-field
-                        class="text-field-amount"
-                        v-model="refundForm.amount"
-                        :rules="[refundAmountIsValid || 'Montant incorrect, le montant doit être supérieur à 0 et inférieur au montant remboursable']"
-                        label="Montant à rembourser"
-                        type="number"
-                        variant="outlined"
-                        required
-                    />
-                  </v-form>
-                </template>
+              <RefundFormDialog
+                  :transactionDetails="transactionDetails"
+                  :default-amount="transactionDetails.refundAmountAvailable"
+                  :createRefund="createOperation"
+                  :errored="errored"
+                  :loading="loading"
+              />
 
-                <template #actions="{ closeDialog }">
-                  <v-btn
-                      color="inherit"
-                      @click="closeDialog"
-                      :disabled="!refundAmountIsValid"
-                  >
-                    Abandonner
-                  </v-btn>
-                  <v-btn
-                      color="primary"
-                      @click="() => createRefund(closeDialog)"
-                      :disabled="!refundAmountIsValid"
-                  >
-                    Rembourser
-                  </v-btn>
-                </template>
+              <CaptureFormDialog
+                  :transactionDetails="transactionDetails"
+                  :create-capture="createOperation"
+                  :defaultAmount="transactionDetails.outstandingBalance"
+                  :errored="errored"
+                  :loading="loading"
+              />
 
-              </CustomDialog>
             </div>
           </v-col>
 
@@ -308,6 +279,10 @@ const shortId = (idToShorted) => idToShorted.substring(0, 8);
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.custom-card {
+  margin: 40px
 }
 
 </style>
