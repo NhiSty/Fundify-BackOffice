@@ -39,7 +39,6 @@ if (isApproved.value || selectedMerchant !== null) {
   });
 
   infos = await request.json();
-  console.log(infos);
   clientToken = ref(infos.clientToken);
   clientSecret = ref(infos.clientSecret);
 }
