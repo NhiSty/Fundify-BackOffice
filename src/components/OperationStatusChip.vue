@@ -19,15 +19,15 @@ const getStatusColor = () => {
 const getLabel = () => {
   switch (props.operationStatus) {
     case 'created':
-      return 'Créée';
+      return 'Opération créée';
     case 'processing':
       return 'En cours de traitement';
     case 'waiting_refund':
-      return 'Paiement effectué';
+      return 'Opération effectuée';
     case 'done':
-      return 'Paiement effectué';
+      return 'Opération effectuée';
     case 'failed':
-      return 'Paiement échoué';
+      return 'Opération échouée';
     default:
       return 'Unknown';
   }

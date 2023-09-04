@@ -27,17 +27,17 @@ const getLabel = () => {
     case 'created':
       return 'En attente de paiement';
     case 'authorized':
-      return 'Autorisé';
+      return 'Autorisée';
     case 'partial_captured':
-      return 'Partiellement payé';
+      return 'Partiellement payée';
     case 'captured':
       return 'Payé';
     case 'waiting_refund':
       return 'En attente de remboursement';
     case 'partial_refunded':
-      return 'Partiellement remboursé';
+      return 'Partiellement remboursée';
     case 'refunded':
-      return 'Remboursé';
+      return 'Remboursée';
     default:
       return 'Unknown';
   }

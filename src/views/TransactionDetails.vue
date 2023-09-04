@@ -12,6 +12,7 @@ import CustomDialog from '../components/CustomDialog.vue';
 import formatDate from '../utils/formatDate';
 import RefundFormDialog from '../components/RefundFormDialog.vue';
 import CaptureFormDialog from '../components/CaptureFormDialog.vue';
+import OperationTypeChip from "../components/OperationTypeChip.vue";
 
 const transactionDetails = ref({});
 const loading = ref(false);
@@ -217,7 +218,7 @@ const shortId = (idToShorted) => idToShorted.substring(0, 8);
               :key="item.id"
           >
             <td>{{ shortId(item.operationId) }}</td>
-            <td>{{ item.type === 'capture' ? 'Règlement' : 'Remboursement' }}</td>
+            <td> <OperationTypeChip :operation-type="item.type" /> </td>
             <td>{{ item.amount }}</td>
             <td><OperationStatusChip :operation-status="item.status" /></td>
             <td>
