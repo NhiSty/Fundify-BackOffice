@@ -25,7 +25,7 @@ const toggleEditing = () => {
     Object.assign(infos, initialInfos.value);
   }
   isEditing.value = !isEditing.value;
-}
+};
 
 let infos; let clientToken; let clientSecret;
 if (isApproved.value || selectedMerchant !== null) {
@@ -87,26 +87,27 @@ async function updateMerchant() {
   validationErrors.value = {};
 
   const requiredFields = ['companyName', 'contactEmail', 'contactPhone', 'confirmationRedirectUrl', 'cancellationRedirectUrl', 'currency'];
-  requiredFields.forEach(field => {
+  requiredFields.forEach((field) => {
     if (!infos[field]) {
       validationErrors.value[field] = 'Ce champ est obligatoire';
     }
   });
 
   if (!infos.contactEmail || !isValidEmail(infos.contactEmail)) {
-    validationErrors.value.email = "Email invalide";
+    validationErrors.value.email = 'Email invalide';
   }
   if (!infos.contactPhone || !isValidPhone(infos.contactPhone)) {
-    validationErrors.value.contactPhone = "Numéro de téléphone invalide";
+    validationErrors.value.contactPhone = 'Numéro de téléphone invalide';
   }
   if (!infos.confirmationRedirectUrl || !isValidUrl(infos.confirmationRedirectUrl)) {
-    validationErrors.value.confirmationUrl = "URL de confirmation invalide";
+    validationErrors.value.confirmationUrl = 'URL de confirmation invalide';
   }
   if (!infos.cancellationRedirectUrl || !isValidUrl(infos.cancellationRedirectUrl)) {
     validationErrors.value.cancellationUrl = "URL d'annulation invalide";
   }
   if (!infos.currency || !isValidCurrency(infos.currency)) {
-    validationErrors.value.currency = "Devise invalide (exemple : EUR, USD, GBP)";
+    validationErrors.value.currency = 'Devise invalide (exemple : EUR, USD, GBP)';
+    validationErrors.value.currency = 'Devise invalide (exemple : EUR, USD, GBP)';
   }
 
   if (Object.keys(validationErrors.value).length > 0) {
@@ -125,6 +126,7 @@ async function updateMerchant() {
       confirmationRedirectUrl: infos.confirmationRedirectUrl,
       cancellationRedirectUrl: infos.cancellationRedirectUrl,
       currency: infos.currency,
+      autoCapture: infos.autoCapture,
     }),
     credentials: 'include',
   });
@@ -156,8 +158,9 @@ async function updateMerchant() {
                 validationErrors.cancellationUrl }}</span></dd>
           <dd class="text-lg font-semibold py-2"> currency : <input v-model="infos.currency" class="input-class" /><span
               v-if="validationErrors.currency" class="text-red-500">{{ validationErrors.currency }}</span></dd>
+          <dd class="text-lg font-semibold py-2"> Paiement automatique : <input type="checkbox" :value="infos.autoCapture" v-model="infos.autoCapture" class="input-class" /></dd>
           <button
-            class="px-4 py-2 mt-5 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-green-700 rounded-md hover:bg-green-600 focus:outline-none focus:bg-green-600"
+            class="px-4 py-2 mt-5 text-sm font-medium tracking-wide text-white transition-colors duration-200 transform bg-green-700 rounded-md hover:bg-green-600 focus:outline-none focus:bg-green-600"
             type="submit">Mettre à jour</button>
         </form>
       </div>
@@ -172,6 +175,7 @@ async function updateMerchant() {
         <dd class="text-lg font-semibold"> id : {{ infos.id }}</dd>
         <dd class="text-lg font-semibold"> token : {{ clientToken }}</dd>
         <dd class="text-lg font-semibold"> secret : {{ clientSecret }}</dd>
+        <dd class="text-lg font-semibold"> Paiement automatique : {{ infos.autoCapture === true ? 'Activé' : 'Désactivé' }}</dd>
 
         <button
           class="px-4 py-2 mt-5 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-gray-900 rounded-md hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
