@@ -68,7 +68,7 @@ function isValidEmail(email) {
 }
 
 function isValidUrl(url) {
-  const regex = /^(https?:\/\/)?([a-zA-Z0-9-]+)\.com(:[0-9]+)?(\/\S*)?$/;
+  const regex = /^(https?:\/\/)?([a-zA-Z0-9-]+)\.[a-zA-Z0-9-]+(:[0-9]+)?(\/\S*)?$/;
   return regex.test(url);
 }
 
