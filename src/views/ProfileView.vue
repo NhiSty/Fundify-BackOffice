@@ -68,8 +68,12 @@ function isValidEmail(email) {
 }
 
 function isValidUrl(url) {
-  const regex = /^(https?:\/\/)?([a-zA-Z0-9-]+)\.[a-zA-Z0-9-]+(:[0-9]+)?(\/\S*)?$/;
-  return regex.test(url);
+  try {
+    new URL(url);
+    return true;
+  } catch (_) {
+    return false;
+  }
 }
 
 function isValidPhone(phone) {
