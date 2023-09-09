@@ -87,6 +87,7 @@ const createOperation = async (amount, onClose) => {
     body: JSON.stringify({
       transactionId: transactionDetails.value.transactionId,
       amount: parseFloat(amount, 10),
+      ...(isAdmin.value && { merchantId: transactionDetails.value.merchantId }),
     }),
   });
   if (response.ok) {
@@ -101,6 +102,8 @@ const createOperation = async (amount, onClose) => {
 };
 
 const shortId = (idToShorted) => idToShorted.substring(0, 8);
+
+console.log(transactionDetails, '---<')
 
 </script>
 
