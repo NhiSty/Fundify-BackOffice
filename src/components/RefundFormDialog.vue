@@ -1,6 +1,6 @@
 <script setup>
 
-import {computed, onUpdated, reactive} from 'vue';
+import { computed, onUpdated, reactive } from 'vue';
 import CustomDialog from './CustomDialog.vue';
 
 const props = defineProps({
@@ -28,7 +28,7 @@ const refundAmountIsValid = computed(() => {
 </script>
 
 <template>
-  <CustomDialog v-if="['partial_refunded', 'captured'].includes(transactionDetails.status)">
+  <CustomDialog v-if="['partial_refunded', 'captured', 'waiting_refund'].includes(transactionDetails.status)">
     <template #openButton="{ openDialog }">
       <v-btn
           color="primary"
