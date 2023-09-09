@@ -28,7 +28,7 @@ const refundAmountIsValid = computed(() => {
 </script>
 
 <template>
-  <CustomDialog v-if="['partial_refunded', 'captured', 'waiting_refund'].includes(transactionDetails.status)">
+  <CustomDialog v-if="['partial_refunded', 'captured', 'waiting_refund'].includes(transactionDetails.status) && transactionDetails.refundAmountAvailable !== 0">
     <template #openButton="{ openDialog }">
       <v-btn
           color="primary"
