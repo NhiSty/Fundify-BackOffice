@@ -28,7 +28,7 @@ const captureAmountIsValid = computed(() => {
 </script>
 
 <template>
-  <CustomDialog v-if="['authorized', 'partial_captured'].includes(transactionDetails.status)">
+  <CustomDialog v-if="['authorized', 'partial_captured'].includes(transactionDetails.status) && transactionDetails.outstandingBalance !== 0">
     <template #openButton="{ openDialog }">
       <v-btn
           color="primary"
