@@ -14,7 +14,7 @@
       </div>
       <div class="w-full md:w-1/2">
         <div class="border border-gray-300 shadow">
-          <h3 class="text-xl p-3">Transactions réussies</h3>
+          <h3 class="text-xl p-3">Transactions</h3>
           <div class="p-3">
             <canvas ref="successfullTransactionsChart"></canvas>
           </div>
@@ -27,7 +27,7 @@
       </div>
       <div class="w-full mb-6">
         <div class="border border-gray-300 shadow">
-          <h3 class="text-xl p-3">Nombre de marchands: {{ merchantCount }}</h3>
+          <h3 class="text-xl p-3">Nombre de marchands: {{ totalMerchantRegistered }}</h3>
           <div class="p-3">
             <canvas ref="merchantChart"></canvas>
           </div>
@@ -88,6 +88,7 @@ const merchantValidationsChart = ref(null);
 const transactionStatusChart = ref(null);
 const merchantRegisteredCount = ref(0);
 const merchantRegisteredDate = ref(null);
+const totalMerchantRegistered = ref(0);
 
 const chartOptions = {
   responsive: true,
@@ -138,9 +139,12 @@ onMounted(async () => {
 
     // ['created', 'processing', 'done', 'failed'],
     const createdCount = infos.filter((info) => info.status === 'created').length;
-    const processingCount = infos.filter((info) => info.status === 'processing').length;
-    const doneCount = infos.filter((info) => info.status === 'done').length;
-    const failedCount = infos.filter((info) => info.status === 'failed').length;
+    const capturedCount = infos.filter((info) => info.status === 'captured').length;
+    const partialCapturedCount = infos.filter((info) => info.status === 'partial_captured').length;
+    const authorizedCount = infos.filter((info) => info.status === 'authorized').length;
+    const refundedCount = infos.filter((info) => info.status === 'refunded').length;
+    const partialRefundedCount = infos.filter((info) => info.status === 'partial_refunded').length;
+    const failedCount = infos.filter((info) => info.status === 'cancelled').length;
 
     const { dates, totals } = processDailyTotals(infos);
     if (revenueChart.value && successfullTransactionsChart.value) {
@@ -162,14 +166,14 @@ onMounted(async () => {
 
       // eslint-disable-next-line
       new Chart(successfullTransactionsChart.value, {
-        type: 'doughnut',
+        type: 'bar',
         data: {
-          labels: ['Transactions créées', 'Transactions en cours', 'Transactions terminées', 'Transactions échouées'],
+          labels: ['créées', 'payées', 'partiellement payées', 'autorisées', 'remboursées', 'partiellement remboursées', 'annulées'],
           datasets: [{
             label: 'Transactions',
-            data: [createdCount, processingCount, doneCount, failedCount],
-            backgroundColor: ['#6366F1', '#F3F4F6', '#34D399', '#F87171'],
-            borderColor: ['#6366F1', '#F3F4F6', '#34D399', '#F87171'],
+            data: [createdCount, capturedCount, partialCapturedCount, authorizedCount, refundedCount, partialRefundedCount, failedCount],
+            backgroundColor: ['#6366F1', '#808080', '#34D399', '#F87171', '#FFFF00', '#00FFFF', '#0000FF', '#FF0000'],
+            borderColor: ['#6366F1', '#808080', '#34D399', '#F87171', '#FFFF00', '#00FFFF', '#0000FF', '#FF0000'],
             borderWidth: 1,
           }],
         },
@@ -178,7 +182,6 @@ onMounted(async () => {
     }
   } else if (isAdmin.value && store.state.selectedMerchant === null) {
     if (merchantChart.value) {
-
       const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/kpis/merchants-registered`, {
         method: 'GET',
         headers: {
@@ -308,19 +311,21 @@ onMounted(async () => {
       const transactionRefunded = transactionsByStatusKPIS.find((info) => info._id === 'refunded')?.count || 0;
 
       // eslint-disable-next-line no-underscore-dangle
-      const transactionPartialRefound = transactionsByStatusKPIS.find((info) => info._id === 'partial_refound')?.count || 0;
+      const transactionPartialRefound = transactionsByStatusKPIS.find((info) => info._id === 'partial_refunded')?.count || 0;
+
+      const trxPartialCaptured = transactionsByStatusKPIS.find((info) => info._id === 'partial_captured')?.count || 0;
 
       // eslint-disable-next-line no-underscore-dangle
-      const transactionFaild = transactionsByStatusKPIS.find((info) => info._id === 'failed')?.count || 0;
+      const transactionFaild = transactionsByStatusKPIS.find((info) => info._id === 'cancelled')?.count || 0;
 
       // eslint-disable-next-line
       new Chart(transactionStatusChart.value, {
         type: 'bar',
         data: {
-          labels: ['capturées', 'créées', 'en attente de remboursement', 'remboursées', 'partiellement remboursées', 'échouées'],
+          labels: ['capturées', 'partiellement capturées', 'créées', 'en attente de remboursement', 'remboursées', 'partiellement remboursées', 'annulées'],
           datasets: [{
             label: 'Transactions par statut',
-            data: [transactionCaptured, transactionCreated, transactionWaitingRefound, transactionRefunded, transactionPartialRefound, transactionFaild],
+            data: [transactionCaptured, trxPartialCaptured, transactionCreated, transactionWaitingRefound, transactionRefunded, transactionPartialRefound, transactionFaild],
             backgroundColor: ['#6366F1', '#84de20', '#F87171', '#854d0e', '#134e4a', '#d8b4fe'],
             borderColor: ['#6366F1', '#84de20', '#F87171', '#854d0e', '#134e4a', '#d8b4fe'],
             borderWidth: 1,
@@ -339,6 +344,19 @@ onMounted(async () => {
         },
       });
     }
+
+    await fetch(`${import.meta.env.VITE_SERVER_URL}/api/kpis/total-merchants`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        token: token.value,
+      },
+      credentials: 'include',
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        totalMerchantRegistered.value = data;
+      });
   }
 });
 </script>

@@ -17,6 +17,8 @@ const getStatusColor = () => {
       return 'orange';
     case 'refunded':
       return 'indigo';
+    case 'cancelled':
+      return 'red';
     default:
       return 'bg-gray-400';
   }
@@ -38,6 +40,8 @@ const getLabel = () => {
       return 'Partiellement remboursée';
     case 'refunded':
       return 'Remboursée';
+    case 'cancelled':
+      return 'Annulée';
     default:
       return 'Unknown';
   }
